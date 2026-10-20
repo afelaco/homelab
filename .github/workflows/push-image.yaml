@@ -1,0 +1,51 @@
+#name: Push Image
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - 'docker/airflow/Dockerfile'
+#      - 'docker/airflow/airflow.cfg'
+#      - 'docker/airflow/requirements.txt'
+#      - 'docker/airflow/entrypoint.sh'
+#  workflow_dispatch:
+#
+#env:
+#  GL_REGISTRY: registry.gitlab.com/afelaco/homeauto
+#
+#jobs:
+#  push-image:
+#    name: Build & Push Docker Image
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout Repository
+#        uses: actions/checkout@v4
+#
+#      - name: Login to GitLab Container Registry
+#        uses: docker/login-action@v2
+#        with:
+#          registry: registry.gitlab.com
+#          username: __token__
+#          password: ${{ secrets.GL_TOKEN }}
+#
+#      - name: Extract Docker Metadata
+#        id: meta
+#        uses: docker/metadata-action@v5
+#        with:
+#          images: ${{ env.GL_REGISTRY }}/airflow
+#
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v3
+#
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
+#
+#      - name: Build & Push Docker Image
+#        uses: docker/build-push-action@v5
+#        with:
+#          context: ./docker/airflow
+#          platforms: linux/arm64/v8
+#          push: true
+#          tags: ${{ steps.meta.outputs.tags }}
+#          labels: ${{ steps.meta.outputs.labels }}
