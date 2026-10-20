@@ -1,0 +1,37 @@
+name: Validate Code
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate-code:
+    name: Validate Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install development dependencies
+        run: |
+          uv sync --only-dev
+
+      - name: Run Ruff linter
+        run: |
+          uv run ruff check .
+
+      - name: Check code formatting
+        run: |
+          uv run ruff format --check .
+
+      - name: Run type checking (Mypy)
+        run: |
+          uv run mypy src/
+
+#      - name: Run tests (Pytest)
+#        run: |
+#          uv run pytest

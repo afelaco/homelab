@@ -1,0 +1,5 @@
+brew "ansible"
+brew "gh"
+brew "git"
+brew "tree"
+brew "uv"
