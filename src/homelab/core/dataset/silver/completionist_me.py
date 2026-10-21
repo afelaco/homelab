@@ -1,6 +1,5 @@
-from pandera.polars import Column, DataFrameSchema
-
 from homeauto.core.dataset.silver import SilverDataset
+from pandera.polars import Column, DataFrameSchema
 
 steam_app = SilverDataset(
     container="completionist-me",

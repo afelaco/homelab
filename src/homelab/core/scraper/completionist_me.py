@@ -30,9 +30,7 @@ class CompletionistMeScraper:
 
     def parse_fields(self, soup: BeautifulSoup) -> dict[str, str | None]:
         return {
-            "completion_playtime_avg": self.find_element(
-                soup, field="Completion Playtime Avg."
-            ),
+            "completion_playtime_avg": self.find_element(soup, field="Completion Playtime Avg."),
             # Add more fields here later:
             # "percent_complete": self.extract_percent_complete(soup),
             # "total_achievements": self.extract_total_achievements(soup),

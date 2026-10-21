@@ -23,8 +23,6 @@ class SteamStoreApiClient(ApiClient):
         )
         sleep(1)
         response.raise_for_status()
-        data = endpoint.model.model_validate_json(response.content).model_dump(
-            by_alias=True
-        )
+        data = endpoint.model.model_validate_json(response.content).model_dump(by_alias=True)
 
         return data

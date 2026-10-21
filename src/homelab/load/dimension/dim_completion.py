@@ -1,7 +1,6 @@
-import polars as pl
-
 import homeauto.core.dataset.silver.completionist_me
 import homeauto.core.table.dimension
+import polars as pl
 from homeauto.core.table.dimension import DimensionTable
 from homeauto.load import Load
 
@@ -15,12 +14,7 @@ class LoadDimCompletion(Load):
         self.table.replace_table(df=self.get_data())
 
     def get_data(self) -> pl.DataFrame:
-        return (
-            self.get_steam_app()
-            .unique("app_id")
-            .sort("app_id")
-            .select(self.table.model.columns.keys())
-        )
+        return self.get_steam_app().unique("app_id").sort("app_id").select(self.table.model.columns.keys())
 
     @staticmethod
     def get_steam_app() -> pl.DataFrame:

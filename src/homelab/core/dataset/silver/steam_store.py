@@ -1,7 +1,6 @@
+from homeauto.core.dataset.silver import SilverDataset
 from pandera.polars import Column, DataFrameSchema
 from polars import Boolean, Date, Float64, Int64, String
-
-from homeauto.core.dataset.silver import SilverDataset
 
 app_details = SilverDataset(
     container="steam-store",

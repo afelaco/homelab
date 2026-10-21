@@ -1,10 +1,9 @@
 from abc import ABC
 
-from pandera.polars import Column, DataFrameSchema
-from polars import String
-
 from homeauto.core.infra import Database
 from homeauto.core.table import Table
+from pandera.polars import Column, DataFrameSchema
+from polars import String
 
 
 class FactTable(Table, ABC):

@@ -1,8 +1,7 @@
-import polars as pl
-
 import homeauto.core.dataset.bronze.steam_web
 import homeauto.core.dataset.silver.steam_web
 import homeauto.core.endpoint.steam_web
+import polars as pl
 from homeauto.core import get_logger
 from homeauto.core.dataset.bronze import BronzeDataset
 from homeauto.core.endpoint import Endpoint

@@ -2,10 +2,9 @@ from abc import ABC
 from dataclasses import dataclass
 
 import polars as pl
-from pandera.polars import DataFrameSchema
-
 from homeauto.core import get_logger
 from homeauto.core.infra import Database, infra
+from pandera.polars import DataFrameSchema
 
 logger = get_logger(name=__name__)
 

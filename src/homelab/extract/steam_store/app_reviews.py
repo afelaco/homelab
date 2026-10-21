@@ -1,13 +1,12 @@
-import polars as pl
-from tqdm import tqdm
-
 import homeauto.core.dataset.bronze.steam_store
 import homeauto.core.dataset.silver.steam_web
 import homeauto.core.endpoint.steam_store
+import polars as pl
 from homeauto.core import get_logger
 from homeauto.core.dataset.bronze import BronzeDataset
 from homeauto.core.endpoint import Endpoint
 from homeauto.extract.steam_store import ExtractSteamStore
+from tqdm import tqdm
 
 logger = get_logger(name=__name__)
 

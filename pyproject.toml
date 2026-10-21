@@ -26,3 +26,10 @@ dev = [
     "pytest>=9.1.1",
     "ruff>=0.17.1",
 ]
+
+[tool.ruff]
+line-length = 120
+lint.select = ["E", "F", "W", "C90", "B", "B9", "I", "Q"]
+
+[tool.mypy]
+ignore_missing_imports = true

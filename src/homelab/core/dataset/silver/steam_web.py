@@ -1,6 +1,5 @@
-from pandera.polars import Column, DataFrameSchema
-
 from homeauto.core.dataset.silver import SilverDataset
+from pandera.polars import Column, DataFrameSchema
 
 owned_games = SilverDataset(
     container="steam-web",

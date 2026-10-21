@@ -1,10 +1,9 @@
-import polars as pl
-from tqdm import tqdm
-
 import homeauto.core.dataset.bronze.completionist_me
 import homeauto.core.dataset.silver.steam_web
+import polars as pl
 from homeauto.core.dataset.bronze import BronzeDataset
 from homeauto.extract.completionist_me import ExtractCompletionistMe
+from tqdm import tqdm
 
 
 class ExtractSteamApp(ExtractCompletionistMe):

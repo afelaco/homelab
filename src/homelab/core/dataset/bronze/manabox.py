@@ -1,7 +1,6 @@
+from homeauto.core.dataset.bronze import BronzeDataset
 from pandera.polars import Column, DataFrameSchema
 from polars import Boolean, Float64, Int64, String
-
-from homeauto.core.dataset.bronze import BronzeDataset
 
 collection = BronzeDataset(
     container="manabox",

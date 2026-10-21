@@ -1,7 +1,6 @@
+from homeauto.core.dataset.bronze import BronzeDataset
 from pandera.polars import Column, DataFrameSchema
 from polars import Boolean, Int64, List, String, Struct
-
-from homeauto.core.dataset.bronze import BronzeDataset
 
 app_details = BronzeDataset(
     container="steam-store",

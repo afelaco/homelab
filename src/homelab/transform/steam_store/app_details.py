@@ -1,7 +1,6 @@
-import polars as pl
-
 import homeauto.core.dataset.bronze.steam_store
 import homeauto.core.dataset.silver.steam_store
+import polars as pl
 from homeauto.core.dataset.bronze import BronzeDataset
 from homeauto.core.dataset.silver import SilverDataset
 from homeauto.transform import Transform
@@ -59,9 +58,7 @@ class TransformSteamStoreAppDetails(Transform):
             .filter(pl.col("app_id").is_not_null())
             .with_columns(
                 pl.col("app_id", "category_id").cast(pl.String),
-                pl.col("release_date").str.strptime(
-                    pl.Date, format="%d %b, %Y", strict=False
-                ),
+                pl.col("release_date").str.strptime(pl.Date, format="%d %b, %Y", strict=False),
             )
             .select(self.output_dataset.model.columns.keys())
         )

@@ -1,6 +1,5 @@
-from pandera.polars import Column, DataFrameSchema
-
 from homeauto.core.dataset.gold import GoldDataset
+from pandera.polars import Column, DataFrameSchema
 
 dim_owned_games = GoldDataset(
     container="steam",

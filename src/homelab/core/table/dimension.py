@@ -1,10 +1,9 @@
 from abc import ABC
 
-from pandera.polars import Column, DataFrameSchema
-from polars import Boolean, Date, Float64, Int64, String
-
 from homeauto.core.infra import Database
 from homeauto.core.table import Table
+from pandera.polars import Column, DataFrameSchema
+from polars import Boolean, Date, Float64, Int64, String
 
 
 class DimensionTable(Table, ABC):

@@ -1,8 +1,7 @@
-import polars as pl
-
 import homeauto.core.dataset.bronze.steam_web
 import homeauto.core.dataset.silver.steam_web
 import homeauto.core.endpoint.steam_web
+import polars as pl
 from homeauto.core import get_logger
 from homeauto.core.dataset.bronze import BronzeDataset
 from homeauto.core.endpoint import Endpoint
@@ -24,9 +23,7 @@ class ExtractSteamWebPlayerAchievements(ExtractSteamWeb):
         self.dataset.write_parquet(df=self.get_data())
 
     def get_data(self) -> pl.DataFrame:
-        played_games = (
-            self.get_owned_games().filter(pl.col("playtime").gt(0)).get_column("app_id")
-        )
+        played_games = self.get_owned_games().filter(pl.col("playtime").gt(0)).get_column("app_id")
         data = []
         for app_id in played_games[:3]:
             try:

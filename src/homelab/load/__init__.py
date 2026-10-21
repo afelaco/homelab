@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 import polars as pl
-
 from homeauto.core.table import Table
 
 

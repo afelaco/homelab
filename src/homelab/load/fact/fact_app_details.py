@@ -1,9 +1,8 @@
-import polars as pl
-
 import homeauto.core.dataset.silver.completionist_me
 import homeauto.core.dataset.silver.steam_store
 import homeauto.core.dataset.silver.steam_web
 import homeauto.core.table.fact
+import polars as pl
 from homeauto.core.table.fact import FactTable
 from homeauto.load import Load
 

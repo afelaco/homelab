@@ -1,7 +1,6 @@
-import polars as pl
-
 import homeauto.core.dataset.bronze.steam_store
 import homeauto.core.dataset.silver.steam_store
+import polars as pl
 from homeauto.core.dataset.bronze import BronzeDataset
 from homeauto.core.dataset.silver import SilverDataset
 from homeauto.transform import Transform

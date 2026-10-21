@@ -2,7 +2,6 @@ import polars as pl
 
 import homelab.core.dataset.bronze.scryfall
 import homelab.core.dataset.silver.scryfall
-import homelab.core.endpoint.scryfall
 from homelab.transform import Transform
 
 

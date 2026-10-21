@@ -4,9 +4,8 @@ from typing import Any
 
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
-from pydantic import BaseModel
-
 from homeauto.core import get_logger
+from pydantic import BaseModel
 
 logger = get_logger(name=__name__)
 

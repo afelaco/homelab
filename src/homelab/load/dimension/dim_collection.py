@@ -1,8 +1,7 @@
-import polars as pl
-
 import homeauto.core.dataset.silver.manabox
 import homeauto.core.dataset.silver.scryfall
 import homeauto.core.table.dimension
+import polars as pl
 from homeauto.core.table.dimension import DimensionTable
 from homeauto.load import Load
 

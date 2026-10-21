@@ -1,9 +1,8 @@
-import polars as pl
-
 import homeauto.core.dataset.silver.completionist_me
 import homeauto.core.dataset.silver.steam_store
 import homeauto.core.dataset.silver.steam_web
 import homeauto.core.table.dimension
+import polars as pl
 from homeauto.core.table.dimension import DimensionTable
 from homeauto.load import Load
 

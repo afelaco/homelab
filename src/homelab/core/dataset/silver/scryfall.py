@@ -6,4 +6,3 @@ cards = Dataset(
     name="cards",
     model=CardsSilverModel,
 )
-
