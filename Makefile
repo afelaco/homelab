@@ -7,3 +7,6 @@ pre-commit-autoupdate:
 
 pre-commit-run:
 	uv run pre-commit run --all-files
+
+ruff-format:
+	uv run ruff format

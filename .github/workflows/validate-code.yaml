@@ -32,6 +32,6 @@ jobs:
         run: |
           uv run mypy src/
 
-#      - name: Run tests (Pytest)
-#        run: |
-#          uv run pytest
+      - name: Run tests (Pytest)
+        run: |
+          uv run pytest
