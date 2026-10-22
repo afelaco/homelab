@@ -19,30 +19,10 @@ class ScryfallApiClient(ApiClient):
         self,
         endpoint: Endpoint,
         params: dict[str, str] | None = None,
-        paginated: bool = True,
     ) -> list[dict[str, Any]]:
-        url = self.get_url(endpoint=endpoint)
-        if paginated:
-            has_more = True
-            data: list[dict[str, Any]] = []
-            while has_more:
-                response = self.session.get(
-                    url=url,
-                    params=params,
-                    headers={
-                        "User-Agent": "homelab/1.0",
-                        "accept": "application/json",
-                    },
-                )
-                response.raise_for_status()
-                sleep(1)  # Be kind to the Scryfall API
-                page = endpoint.model.model_validate_json(response.content)
-                url = page.next_page  # type: ignore
-                has_more = page.has_more  # type: ignore
-                data.extend(page.model_dump(by_alias=True))  # type: ignore
-
-                logger.info("%s records read from %s", len(data), response.url)
-        else:
+        url: str | None = self.get_url(endpoint=endpoint)
+        data: list[dict[str, Any]] = []
+        while url:
             response = self.session.get(
                 url=url,
                 params=params,
@@ -52,8 +32,15 @@ class ScryfallApiClient(ApiClient):
                 },
             )
             response.raise_for_status()
-            data = endpoint.model.model_validate_json(response.content).model_dump(by_alias=True)  # type: ignore
+            page = endpoint.model.model_validate_json(response.content).model_dump()
+            if page.get("data"):
+                data.extend(page["data"])
+            else:
+                data.extend([page])
 
-            logger.info("%s records read from %s", len(data), response.url)
+            logger.info("%s records read from %s", len(data), url)
+
+            url = page.get("next_page") if page.get("next_page") else None
+            sleep(1)
 
         return data

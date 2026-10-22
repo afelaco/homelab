@@ -20,7 +20,7 @@ class ExtractScryfallCards(ExtractScryfall):
 
         return pl.DataFrame(
             data=data,
-            infer_schema_length=len(data),
+            schema=self.dataset.schema,
         )
 
 

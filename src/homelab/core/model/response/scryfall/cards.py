@@ -1,17 +1,13 @@
-from pydantic import BaseModel, model_serializer
+from pydantic import BaseModel
 
-from homelab.core.api.response_model.scryfall import ScryfallApiResponseModel
+from homelab.core.model.response.scryfall import ScryfallResponseModel
 
 
 class Prices(BaseModel):
     eur: str | None = None
 
-    @model_serializer
-    def model_serializer(self) -> str | None:
-        return self.eur
 
-
-class Card(BaseModel):
+class Data(BaseModel):
     id: str
     oracle_id: str
     name: str
@@ -30,4 +26,4 @@ class Card(BaseModel):
     prices: Prices
 
 
-ScryfallCardsApiResponseModel = ScryfallApiResponseModel[Card]
+CardsScryfallResponseModel = ScryfallResponseModel[Data]

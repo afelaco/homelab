@@ -1,10 +1,7 @@
-from abc import ABC
-from dataclasses import dataclass
-
 from pydantic import BaseModel
 
 
-@dataclass
-class Endpoint(ABC):
-    url: str
-    model: type[BaseModel]
+class Endpoint:
+    def __init__(self, url: str, model: type[BaseModel]) -> None:
+        self.url = url
+        self.model = model

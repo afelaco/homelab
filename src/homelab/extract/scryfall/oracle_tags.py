@@ -14,11 +14,8 @@ class ExtractScryfallOracleTags(ExtractScryfall):
         )
 
     def get_data(self) -> pl.DataFrame:
-        metadata = self.api_client.get(
-            endpoint=self.endpoint,
-            paginated=False,
-        )
-        download_uri = metadata["jsonl_download_uri"]
+        metadata = self.api_client.get(endpoint=self.endpoint)
+        download_uri = metadata[0]["jsonl_download_uri"]
 
         path = self.dataset.path
         response = requests.get(download_uri, stream=True)

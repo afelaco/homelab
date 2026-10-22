@@ -6,7 +6,12 @@ from homelab.core.dataset import Dataset
 
 
 class Transform(ABC):
-    def __init__(self, bronze_dataset: Dataset, silver_dataset: Dataset, mapping=dict[str, str]):
+    def __init__(
+        self,
+        bronze_dataset: Dataset,
+        silver_dataset: Dataset,
+        mapping: dict[str, str] | None = None,
+    ):
         self.bronze_dataset = bronze_dataset
         self.silver_dataset = silver_dataset
         self.mapping = mapping

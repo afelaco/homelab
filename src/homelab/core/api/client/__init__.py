@@ -17,5 +17,5 @@ class ApiClient(ABC):
         pass
 
     @abstractmethod
-    def get(self, *args: Any, **kwargs: Any) -> list[dict[str, Any]] | dict[str, Any]:
+    def get(self, *args: Any, **kwargs: Any) -> list[dict[str, Any]]:
         pass

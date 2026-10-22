@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class ScryfallOracleTagsApiResponseModel(BaseModel):
+class OracleTagsScryfallResponseModel(BaseModel):
     compressed_size: int
     description: str
     id: str
