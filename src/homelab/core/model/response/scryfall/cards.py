@@ -17,11 +17,7 @@ class Data(BaseModel):
     oracle_text: str | None = None
     power: str | None = None
     toughness: str | None = None
-    colors: list[str] | None = None
     color_identity: list[str]
-    keywords: list[str]
-    set: str
-    set_name: str
     rarity: str
     prices: Prices
 

@@ -10,11 +10,23 @@ class TransformScryfallCards(Transform):
         super().__init__(
             bronze_dataset=homelab.core.dataset.bronze.scryfall.cards,
             silver_dataset=homelab.core.dataset.silver.scryfall.cards,
+            mapping={
+                "id": "card_id",
+                "type_line": "type",
+                "color_identity": "color",
+            },
         )
 
     def get_data(self) -> pl.DataFrame:
-        return self.bronze_dataset.read_parquet().explode("colors").explode("color_identity").explode("keywords")
+        return (
+            self.bronze_dataset.read_parquet()
+            .rename(self.mapping)
+            .with_columns(pl.col("color").list.join(separator=""))
+            .with_columns(pl.col(pl.String).replace("", None))
+            .unnest("prices")
+            .rename({"eur": "price"})
+        )
 
 
 if __name__ == "__main__":
-    data = TransformScryfallCards().get_data().to_pandas()
+    TransformScryfallCards().run()

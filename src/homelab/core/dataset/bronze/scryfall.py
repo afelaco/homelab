@@ -15,11 +15,7 @@ cards = Dataset(
         "oracle_text": String,
         "power": String,
         "toughness": String,
-        "colors": List(String),
         "color_identity": List(String),
-        "keywords": List(String),
-        "set": String,
-        "set_name": String,
         "rarity": String,
         "prices": Struct(
             {
@@ -32,5 +28,19 @@ cards = Dataset(
 oracle_tags = Dataset(
     layer="bronze",
     name="oracle_tags",
-    schema={},
+    schema={
+        "id": String,
+        "slug": String,
+        "description": String,
+        # "parent_ids": List(String),
+        # "child_ids": List(String),
+        "taggings": List(
+            Struct(
+                {
+                    "oracle_id": String,
+                    "weight": String,
+                }
+            )
+        ),
+    },
 )

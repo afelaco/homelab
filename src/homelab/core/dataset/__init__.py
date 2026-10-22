@@ -37,6 +37,5 @@ class Dataset:
 
         logger.info("%s records written to %s", len(df), self.path)
 
-    @staticmethod
-    def validate(df: pl.DataFrame) -> pl.DataFrame:
-        return df
+    def validate(self, df: pl.DataFrame) -> pl.DataFrame:
+        return df.select(self.schema.keys())

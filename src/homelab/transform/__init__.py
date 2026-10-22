@@ -10,7 +10,7 @@ class Transform(ABC):
         self,
         bronze_dataset: Dataset,
         silver_dataset: Dataset,
-        mapping: dict[str, str] | None = None,
+        mapping: dict[str, str],
     ):
         self.bronze_dataset = bronze_dataset
         self.silver_dataset = silver_dataset

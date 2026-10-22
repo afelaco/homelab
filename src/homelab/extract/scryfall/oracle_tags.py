@@ -26,7 +26,10 @@ class ExtractScryfallOracleTags(ExtractScryfall):
                 if chunk:
                     f.write(chunk)
 
-        return pl.read_ndjson(path)
+        return pl.read_ndjson(
+            path,
+            schema=self.dataset.schema,
+        )
 
 
 if __name__ == "__main__":
