@@ -1,22 +1,44 @@
-import pandera.polars as pa
+from pandera import Field
+from polars import Float64, List, String, Struct
 
 from homelab.core.model import Model
 
 
 class CardsBronzeModel(Model):
-    id: str = pa.Field(unique=True)
-    oracle_id: str
-    name: str
-    mana_cost: str = pa.Field(nullable=True)
-    cmc: float
-    type_line: str
-    oracle_text: str = pa.Field(nullable=True)
-    power: str = pa.Field(nullable=True)
-    toughness: str = pa.Field(nullable=True)
-    colors: list[str] = pa.Field(nullable=True)
-    color_identity: list[str]
-    keywords: list[str]
-    set: str
-    set_name: str
-    rarity: str
-    prices: str = pa.Field(nullable=True)
+    id: String = Field(unique=True)
+    oracle_id: String
+    name: String
+    mana_cost: String | None = Field(nullable=True)
+    cmc: Float64
+    type_line: String
+    oracle_text: String | None = Field(nullable=True)
+    power: String | None = Field(nullable=True)
+    toughness: String | None = Field(nullable=True)
+    colors: List(String) | None = Field(nullable=True)
+    color_identity: List(String)
+    keywords: List(String)
+    set: String
+    set_name: String
+    rarity: String
+    prices: String | None = Field(nullable=True)
+
+class OracleTagsBronzeModel(Model):
+    object: String
+    id: String | None = Field(unique=True)
+    label: String
+    slug: String
+    type: String
+    uri: String
+    description: String | None = Field(nullable=True)
+    parent_ids: List(String) | None = Field(nullable=True)
+    child_ids: List(String) | None = Field(nullable=True)
+    aliases: List(String) | None = Field(nullable=True)
+    taggings: List(
+        Struct(
+            {
+                "oracle_id": String,
+                "weight": String,
+                "annotation": String,
+            }
+        )
+    )
