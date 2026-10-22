@@ -101,18 +101,23 @@ class TransformScryfallOracleTags(Transform):
         )
 
     def get_data(self) -> pl.DataFrame:
-        return (
+        data = (
             self.bronze_dataset.read_parquet()
             .rename(self.mapping)
             .filter(
                 ~pl.col("slug").str.starts_with("cycle"),
                 ~pl.col("slug").is_in(EXCLUDED_TAGS),
             )
-            # .explode("parent_ids")
-            # .explode("child_ids")
-            .explode("taggings")
+            .explode("parent_ids", empty_as_null=True)
+            .explode("taggings", empty_as_null=True)
             .unnest("taggings")
         )
+
+        ## TODO: this doesn't work as parent tags still carry the metadata of children, need to join
+        parent_data = data.drop("tag_id").rename({"parent_ids": "tag_id"})
+        data = data.drop("parent_ids")
+
+        return pl.concat([data, parent_data.select(data.columns)])
 
 
 if __name__ == "__main__":
