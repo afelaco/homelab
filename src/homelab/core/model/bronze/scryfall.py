@@ -22,6 +22,7 @@ class CardsBronzeModel(Model):
     rarity: String
     prices: String | None = Field(nullable=True)
 
+
 class OracleTagsBronzeModel(Model):
     object: String
     id: String | None = Field(unique=True)
