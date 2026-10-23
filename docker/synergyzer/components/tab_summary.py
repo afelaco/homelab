@@ -1,3 +1,4 @@
+import urllib.parse
 import altair as alt
 import streamlit as st
 import polars as pl
@@ -26,7 +27,7 @@ def get_deck_bar_color(deck_full_df: pl.DataFrame) -> str:
             "U": "#0e68ab",  # Blue
             "B": "#7c7774",  # Black
             "R": "#ff4b4b",  # Red
-            "G": "#00c853"   # Green
+            "G": "#00c853"  # Green
         }.get(c, "#ff4b4b")
     elif "G" in all_chars:
         return "#00c853"
@@ -154,7 +155,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
     st.markdown("---")
     st.subheader("Parsed Decklist Card Grid")
 
-    # 4. Injected CSS for Hover Tooltips
+    # 4. Injected CSS for Top-Anchored Hover Tooltips
     st.markdown(
         """
         <style>
@@ -195,8 +196,16 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
     for idx, row in deck_pd.iterrows():
         card_name = row["card_name"]
         quantity = int(row["quantity"])
+
+        # Safely split MDFC double-faced names to extract front face
+        front_face_name = str(card_name).split("//")[0].strip()
+
         image_url = get_card_image_url(card_name, row.get("image_url"))
+
         scryfall_url = row.get("scryfall_url")
+        if not (scryfall_url and isinstance(scryfall_url, str) and scryfall_url.strip()):
+            encoded_link_name = urllib.parse.quote(front_face_name)
+            scryfall_url = f"https://scryfall.com/search?q=%21%22{encoded_link_name}%22"
 
         raw_tags = row.get("tags")
         tags_list = list(raw_tags) if raw_tags is not None and hasattr(raw_tags, "__iter__") else []
@@ -208,7 +217,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
         tier_label, badge_color, bg_rgba, bar_gradient, fill_pct = get_copy_tier_info(quantity)
 
         with deck_cols[idx % 4]:
-            has_valid_link = scryfall_url and isinstance(scryfall_url, str) and scryfall_url.strip()
+            has_valid_link = bool(scryfall_url and isinstance(scryfall_url, str) and scryfall_url.strip())
             link_prefix = f'<a href="{scryfall_url}" target="_blank">' if has_valid_link else ''
             link_suffix = '</a>' if has_valid_link else ''
 
@@ -222,14 +231,14 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
                         <div>{tags_html}</div>
                     </div>
                     {link_prefix}
-                        <img src="{image_url}" style="width: 100%; border-radius: 8px; margin-bottom: 6px;">
+                        <img src="{image_url}" style="width: 100%; border-radius: 8px; margin-bottom: 6px; display: block;">
                     {link_suffix}
                 </div>
                 ''',
                 unsafe_allow_html=True
             )
 
-            # 4-3-2-1 Rulebook Tier Frame Box
+            # 4-3-2-1 Rulebook Tier Badge Frame
             st.markdown(
                 f'''
                 <div style="background-color: #1e222a; border: 1px solid #313640; border-radius: 6px; padding: 6px 10px; margin-bottom: 12px;">
