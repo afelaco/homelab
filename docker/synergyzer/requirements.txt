@@ -1,0 +1,7 @@
+streamlit
+polars
+psycopg2-binary
+sqlalchemy
+pyyaml
+pydantic
+requests

@@ -1,0 +1,418 @@
+[
+  {
+    "tag_a": "lifegain",
+    "tag_b": "lifegain-matters"
+  },
+  {
+    "tag_a": "lifegain",
+    "tag_b": "synergy-lifelink"
+  },
+  {
+    "tag_a": "lifegain",
+    "tag_b": "typal-angel"
+  },
+  {
+    "tag_a": "ramp",
+    "tag_b": "landfall"
+  },
+  {
+    "tag_a": "ramp",
+    "tag_b": "high-mana-value-matters"
+  },
+  {
+    "tag_a": "ramp",
+    "tag_b": "tutor-land-basic"
+  },
+  {
+    "tag_a": "ramp",
+    "tag_b": "land-ramp"
+  },
+  {
+    "tag_a": "graveyard-fuel",
+    "tag_b": "recursion"
+  },
+  {
+    "tag_a": "graveyard-fuel",
+    "tag_b": "reanimate"
+  },
+  {
+    "tag_a": "graveyard-fuel",
+    "tag_b": "delve"
+  },
+  {
+    "tag_a": "graveyard-fuel",
+    "tag_b": "cards-in-graveyard-matter"
+  },
+  {
+    "tag_a": "synergy-token",
+    "tag_b": "token-doubler"
+  },
+  {
+    "tag_a": "synergy-token",
+    "tag_b": "tokenlink"
+  },
+  {
+    "tag_a": "synergy-token",
+    "tag_b": "repeatable-token-generator"
+  },
+  {
+    "tag_a": "synergy-counterspell",
+    "tag_b": "counterspell"
+  },
+  {
+    "tag_a": "synergy-counterspell",
+    "tag_b": "counterspell-instant"
+  },
+  {
+    "tag_a": "scry",
+    "tag_b": "top-deck-manipulation"
+  },
+  {
+    "tag_a": "scry",
+    "tag_b": "repeatable-scry"
+  },
+  {
+    "tag_a": "draw",
+    "tag_b": "draw-matters"
+  },
+  {
+    "tag_a": "draw",
+    "tag_b": "card-advantage"
+  },
+  {
+    "tag_a": "draw",
+    "tag_b": "repeatable-card-advantage"
+  },
+  {
+    "tag_a": "removal-creature",
+    "tag_b": "spot-removal"
+  },
+  {
+    "tag_a": "removal-creature",
+    "tag_b": "removal-nonland"
+  },
+  {
+    "tag_a": "removal-creature",
+    "tag_b": "doom-blade"
+  },
+  {
+    "tag_a": "sweeper",
+    "tag_b": "expansion-sweeper"
+  },
+  {
+    "tag_a": "sweeper",
+    "tag_b": "counterspell-sweeper"
+  },
+  {
+    "tag_a": "counters-matter",
+    "tag_b": "proliferate"
+  },
+  {
+    "tag_a": "counters-matter",
+    "tag_b": "keyword-counter"
+  },
+  {
+    "tag_a": "counters-matter",
+    "tag_b": "pp-counters-matter"
+  },
+  {
+    "tag_a": "synergy-artifact",
+    "tag_b": "affinity-for-artifacts"
+  },
+  {
+    "tag_a": "synergy-artifact",
+    "tag_b": "tutor-artifact"
+  },
+  {
+    "tag_a": "synergy-enchantment",
+    "tag_b": "affinity-for-enchantments"
+  },
+  {
+    "tag_a": "synergy-enchantment",
+    "tag_b": "tutor-enchantment"
+  },
+  {
+    "tag_a": "synergy-equipment",
+    "tag_b": "affinity-for-equipment"
+  },
+  {
+    "tag_a": "synergy-equipment",
+    "tag_b": "tutor-artifact-equipment"
+  },
+  {
+    "tag_a": "sacrifice-outlet",
+    "tag_b": "death-trigger"
+  },
+  {
+    "tag_a": "sacrifice-outlet",
+    "tag_b": "graveyard-fuel"
+  },
+  {
+    "tag_a": "sacrifice-outlet",
+    "tag_b": "sacrifice-matters"
+  },
+  {
+    "tag_a": "synergy-flying",
+    "tag_b": "high-flying"
+  },
+  {
+    "tag_a": "synergy-flying",
+    "tag_b": "gives-flying"
+  },
+  {
+    "tag_a": "synergy-vigilance",
+    "tag_b": "vigilance-counter"
+  },
+  {
+    "tag_a": "synergy-trample",
+    "tag_b": "gains-trample"
+  },
+  {
+    "tag_a": "synergy-deathtouch",
+    "tag_b": "gains-deathtouch"
+  },
+  {
+    "tag_a": "synergy-haste",
+    "tag_b": "gains-haste"
+  },
+  {
+    "tag_a": "synergy-hexproof",
+    "tag_b": "gains-hexproof"
+  },
+  {
+    "tag_a": "synergy-indestructible",
+    "tag_b": "gains-indestructible"
+  },
+  {
+    "tag_a": "prowess-like",
+    "tag_b": "prowess-anthem"
+  },
+  {
+    "tag_a": "storm-count-matters",
+    "tag_b": "storm-like"
+  },
+  {
+    "tag_a": "synergy-kicker",
+    "tag_b": "multiple-kicker-costs"
+  },
+  {
+    "tag_a": "synergy-foretell",
+    "tag_b": "gives-foretell"
+  },
+  {
+    "tag_a": "synergy-madness",
+    "tag_b": "gives-madness"
+  },
+  {
+    "tag_a": "synergy-flashback",
+    "tag_b": "gives-flashback"
+  },
+  {
+    "tag_a": "synergy-morph",
+    "tag_b": "turn-face-down"
+  },
+  {
+    "tag_a": "surveil",
+    "tag_b": "synergy-surveil"
+  },
+  {
+    "tag_a": "surveil",
+    "tag_b": "repeatable-surveil"
+  },
+  {
+    "tag_a": "synergy-explore",
+    "tag_b": "explore-like"
+  },
+  {
+    "tag_a": "synergy-investigate",
+    "tag_b": "repeatable-clues"
+  },
+  {
+    "tag_a": "synergy-food",
+    "tag_b": "repeatable-food"
+  },
+  {
+    "tag_a": "synergy-treasure",
+    "tag_b": "repeatable-treasures"
+  },
+  {
+    "tag_a": "synergy-clue",
+    "tag_b": "repeatable-clues"
+  },
+  {
+    "tag_a": "synergy-blood",
+    "tag_b": "repeatable-blood"
+  },
+  {
+    "tag_a": "synergy-powerstone",
+    "tag_b": "powerstone-mana"
+  },
+  {
+    "tag_a": "synergy-energy",
+    "tag_b": "energy-increaser"
+  },
+  {
+    "tag_a": "synergy-poison",
+    "tag_b": "poison-mechanics"
+  },
+  {
+    "tag_a": "synergy-infect",
+    "tag_b": "gives-infect"
+  },
+  {
+    "tag_a": "synergy-battle",
+    "tag_b": "tutor-battle"
+  },
+  {
+    "tag_a": "synergy-room",
+    "tag_b": "tutor-enchantment-room"
+  },
+  {
+    "tag_a": "synergy-case",
+    "tag_b": "synergy-case"
+  },
+  {
+    "tag_a": "synergy-saddle",
+    "tag_b": "gives-saddle"
+  },
+  {
+    "tag_a": "typal-mount",
+    "tag_b": "tutor-creature-mount"
+  },
+  {
+    "tag_a": "synergy-disguise",
+    "tag_b": "gives-disguise"
+  },
+  {
+    "tag_a": "synergy-manifest",
+    "tag_b": "synergy-manifest-dread"
+  },
+  {
+    "tag_a": "synergy-plot",
+    "tag_b": "gives-plot"
+  },
+  {
+    "tag_a": "typal-detective",
+    "tag_b": "typal-human"
+  },
+  {
+    "tag_a": "typal-outlaw",
+    "tag_b": "affinity-for-outlaws"
+  },
+  {
+    "tag_a": "typal-mercenary",
+    "tag_b": "tutor-creature-mercenary"
+  },
+  {
+    "tag_a": "typal-pirate",
+    "tag_b": "impulse-creature-pirate"
+  },
+  {
+    "tag_a": "typal-warlock",
+    "tag_b": "hate-typal-warlock"
+  },
+  {
+    "tag_a": "typal-knight",
+    "tag_b": "affinity-for-knights"
+  },
+  {
+    "tag_a": "typal-wizard",
+    "tag_b": "tutor-creature-wizard"
+  },
+  {
+    "tag_a": "typal-cleric",
+    "tag_b": "hate-typal-cleric"
+  },
+  {
+    "tag_a": "typal-rogue",
+    "tag_b": "hate-typal-rogue"
+  },
+  {
+    "tag_a": "typal-warrior",
+    "tag_b": "typal-soldier"
+  },
+  {
+    "tag_a": "typal-elf",
+    "tag_b": "affinity-for-elves"
+  },
+  {
+    "tag_a": "typal-goblin",
+    "tag_b": "tutor-creature-goblin"
+  },
+  {
+    "tag_a": "typal-zombie",
+    "tag_b": "tutor-creature-zombie"
+  },
+  {
+    "tag_a": "typal-vampire",
+    "tag_b": "seek-creature-vampire"
+  },
+  {
+    "tag_a": "typal-dragon",
+    "tag_b": "tutor-creature-dragon"
+  },
+  {
+    "tag_a": "typal-angel",
+    "tag_b": "hate-typal-angel"
+  },
+  {
+    "tag_a": "typal-demon",
+    "tag_b": "tutor-creature-demon"
+  },
+  {
+    "tag_a": "typal-hydra",
+    "tag_b": "tutor-creature"
+  },
+  {
+    "tag_a": "typal-sphinx",
+    "tag_b": "tutor-creature-sphinx"
+  },
+  {
+    "tag_a": "typal-merfolk",
+    "tag_b": "seek-creature-merfolk"
+  },
+  {
+    "tag_a": "typal-sliver",
+    "tag_b": "tutor-creature-sliver"
+  },
+  {
+    "tag_a": "typal-cat",
+    "tag_b": "affinity-for-cats"
+  },
+  {
+    "tag_a": "typal-dog",
+    "tag_b": "hate-typal-dog"
+  },
+  {
+    "tag_a": "typal-rat",
+    "tag_b": "seek-creature-rat"
+  },
+  {
+    "tag_a": "typal-bird",
+    "tag_b": "affinity-for-birds"
+  },
+  {
+    "tag_a": "typal-insect",
+    "tag_b": "type-errata-specific-insect"
+  },
+  {
+    "tag_a": "typal-beast",
+    "tag_b": "hate-typal-beast"
+  },
+  {
+    "tag_a": "typal-giant",
+    "tag_b": "hate-typal-giant"
+  },
+  {
+    "tag_a": "typal-soldier",
+    "tag_b": "affinity-for-allies"
+  },
+  {
+    "tag_a": "typal-ally",
+    "tag_b": "synergy-party"
+  },
+  {
+    "tag_a": "synergy-party",
+    "tag_b": "affinity-for-party"
+  }
+]
