@@ -8,7 +8,7 @@ cards = Dataset(
     schema={
         "card_id": String,
         "oracle_id": String,
-        "name": String,
+        "card": String,
         "mana_cost": String,
         "cmc": Float64,
         "type": String,

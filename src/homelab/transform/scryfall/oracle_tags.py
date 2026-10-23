@@ -147,4 +147,4 @@ class TransformScryfallOracleTags(Transform):
 
 
 if __name__ == "__main__":
-    TransformScryfallOracleTags().run()
+    data = TransformScryfallOracleTags().get_data().get_column("tag").unique().to_list()

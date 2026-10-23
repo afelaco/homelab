@@ -12,6 +12,7 @@ class TransformScryfallCards(Transform):
             silver_dataset=homelab.core.dataset.silver.scryfall.cards,
             mapping={
                 "id": "card_id",
+                "name": "card",
                 "type_line": "type",
                 "color_identity": "color",
             },
