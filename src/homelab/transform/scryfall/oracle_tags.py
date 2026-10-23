@@ -97,7 +97,10 @@ class TransformScryfallOracleTags(Transform):
         super().__init__(
             bronze_dataset=homelab.core.dataset.bronze.scryfall.oracle_tags,
             silver_dataset=homelab.core.dataset.silver.scryfall.oracle_tags,
-            mapping={"id": "tag_id"},
+            mapping={
+                "id": "tag_id",
+                "slug": "tag",
+            },
         )
 
     def get_data(self) -> pl.DataFrame:
@@ -105,19 +108,42 @@ class TransformScryfallOracleTags(Transform):
             self.bronze_dataset.read_parquet()
             .rename(self.mapping)
             .filter(
-                ~pl.col("slug").str.starts_with("cycle"),
-                ~pl.col("slug").is_in(EXCLUDED_TAGS),
+                ~pl.col("tag").str.starts_with("cycle"),
+                ~pl.col("tag").is_in(EXCLUDED_TAGS),
             )
-            .explode("parent_ids", empty_as_null=True)
-            .explode("taggings", empty_as_null=True)
-            .unnest("taggings")
         )
 
-        ## TODO: this doesn't work as parent tags still carry the metadata of children, need to join
-        parent_data = data.drop("tag_id").rename({"parent_ids": "tag_id"})
-        data = data.drop("parent_ids")
+        direct_tags = self.get_direct_tags(data=data)
+        parent_tags = self.get_parent_tags(data=data)
 
-        return pl.concat([data, parent_data.select(data.columns)])
+        return pl.concat([direct_tags, parent_tags])
+
+    def get_direct_tags(self, data: pl.DataFrame) -> pl.DataFrame:
+        return data.explode("taggings").unnest("taggings").sort("oracle_id").select(self.silver_dataset.schema.keys())
+
+    def get_parent_tags(self, data: pl.DataFrame) -> pl.DataFrame:
+        return (
+            (
+                data.explode("parent_ids")
+                .explode("taggings")
+                .unnest("taggings")
+                .select(
+                    "oracle_id",
+                    pl.col("parent_ids").alias("tag_id"),
+                    pl.col("weight"),
+                )
+            )
+            .join(
+                other=data.select(
+                    "tag_id",
+                    "tag",
+                    "description",
+                ),
+                on="tag_id",
+                how="left",
+            )
+            .select(self.silver_dataset.schema.keys())
+        )
 
 
 if __name__ == "__main__":

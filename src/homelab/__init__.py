@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    root: str = "/Users/admin/Repositories"
+    ROOT: str = "/Users/admin/Repositories"
 
     model_config = SettingsConfigDict(env_file=find_dotenv())
 

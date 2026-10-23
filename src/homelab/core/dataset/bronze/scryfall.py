@@ -33,7 +33,6 @@ oracle_tags = Dataset(
         "slug": String,
         "description": String,
         "parent_ids": List(String),
-        # "child_ids": List(String),
         "taggings": List(
             Struct(
                 {

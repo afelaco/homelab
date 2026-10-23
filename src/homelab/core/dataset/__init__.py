@@ -24,7 +24,7 @@ class Dataset:
         self.path = self.get_path()
 
     def get_path(self) -> Path:
-        return Path(f"{SETTINGS.root}/homelab/data/{self.layer}/{self.name}.parquet").resolve()
+        return Path(f"{SETTINGS.ROOT}/homelab/data/{self.layer}/{self.name}.parquet").resolve()
 
     def read_parquet(self) -> pl.DataFrame:
         df = pl.read_parquet(source=self.path).pipe(self.validate)

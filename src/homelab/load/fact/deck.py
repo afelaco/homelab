@@ -28,7 +28,7 @@ deck = pl.DataFrame(
 ans = (
     deck.join(other=cards, on="name", how="left")
     .join(other=tags, on="oracle_id", how="left")
-    .group_by("slug")
+    .group_by("tag")
     .agg(pl.col("copies").sum())
     .sort("copies", descending=True)
     .to_pandas()

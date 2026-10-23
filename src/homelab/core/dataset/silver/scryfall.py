@@ -25,10 +25,10 @@ oracle_tags = Dataset(
     layer="silver",
     name="oracle_tags",
     schema={
-        "tag_id": String,
-        "slug": String,
-        "description": String,
         "oracle_id": String,
+        "tag_id": String,
+        "tag": String,
+        "description": String,
         "weight": String,
     },
 )
