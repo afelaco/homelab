@@ -240,9 +240,7 @@ recommended = (
     deck_tagged.select("tag")
     .join(other=tags_synergies, left_on="tag", right_on="tag_a", how="left")
     .join(other=tags, left_on="tag_b", right_on="tag", how="left")
-    .join(
-        other=cards.filter(pl.col("color").eq("G")), on="oracle_id", how="left"
-    )
+    .join(other=cards.filter(pl.col("color").eq("G")), on="oracle_id", how="left")
     .get_column("card")
     .value_counts()
     .sort("count", descending=True)

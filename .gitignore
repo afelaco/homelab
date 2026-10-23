@@ -150,7 +150,7 @@ activemq-data/
 *.sage.py
 
 # Environments
-src/homelab/.env
+.env
 .envrc
 .venv
 env/
