@@ -12,7 +12,7 @@ class Data(BaseModel):
     oracle_id: str
     name: str
     mana_cost: str | None = None
-    cmc: float
+    cmc: int
     type_line: str
     oracle_text: str | None = None
     power: str | None = None

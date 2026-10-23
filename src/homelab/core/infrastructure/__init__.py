@@ -11,7 +11,7 @@ class Database:
         password: str,
         host: str = "localhost",
         port: str = "5432",
-        database: str = "public",
+        database: str = "postgres",
     ) -> None:
         self.username = username
         self.password = password

@@ -116,7 +116,7 @@ class TransformScryfallOracleTags(Transform):
         direct_tags = self.get_direct_tags(data=data)
         parent_tags = self.get_parent_tags(data=data)
 
-        return pl.concat([direct_tags, parent_tags])
+        return pl.concat([direct_tags, parent_tags]).filter(pl.col("tag").is_not_null())
 
     def get_direct_tags(self, data: pl.DataFrame) -> pl.DataFrame:
         return data.explode("taggings").unnest("taggings").sort("oracle_id").select(self.silver_dataset.schema.keys())
@@ -147,4 +147,4 @@ class TransformScryfallOracleTags(Transform):
 
 
 if __name__ == "__main__":
-    data = TransformScryfallOracleTags().get_data().get_column("tag").unique().to_list()
+    TransformScryfallOracleTags().run()

@@ -1,25 +1,21 @@
-import homelab.core.dataset.silver.steam_store
-import homelab.core.table.dimension
 import polars as pl
 
-from homelab.core.table import Table
+import homelab.core.dataset.silver.scryfall
+import homelab.core.table.dimension
 from homelab.load import Load
 
 
 class LoadDimCards(Load):
-    @property
-    def table(self) -> Table:
-        return homelab.core.table.dimension.dim_app_details
+    def __init__(self) -> None:
+        super().__init__(
+            table=homelab.core.table.dimension.dim_cards,
+        )
 
     def run(self) -> None:
         self.table.replace_table(df=self.get_data())
 
     def get_data(self) -> pl.DataFrame:
-        return self.get_app_details().unique("app_id").sort("app_id").select(self.table.model.columns.keys())
-
-    @staticmethod
-    def get_app_details() -> pl.DataFrame:
-        return homelab.core.dataset.silver.steam_store.app_details.read_parquet()
+        return homelab.core.dataset.silver.scryfall.cards.read_parquet().sort("card").select(self.table.schema.keys())
 
 
 if __name__ == "__main__":

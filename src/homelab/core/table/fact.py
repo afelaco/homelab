@@ -1,15 +1,26 @@
-# from abc import ABC
-#
-# from homeauto.core.infra import Database
-# from homeauto.core.table import Table
-# from pandera.polars import Column, DataFrameSchema
-# from polars import String
-#
-#
-# class FactTable(Table, ABC):
-#     pass
-#
-#
+from abc import ABC
+
+from homelab.core.infrastructure import DWH
+from homelab.core.table import Table
+from polars import String
+
+
+class FactTable(Table):
+    pass
+
+fact_cards_tags = FactTable(
+    name="fact_cards_tags",
+    schema={
+        "oracle_id": String,
+        "tag_id": String,
+        "tag": String,
+        "description": String,
+        "weight": String,
+    },
+    database=DWH,
+)
+
+# 
 # fact_app_details = FactTable(
 #     name="fact_app_details",
 #     schema=DataFrameSchema(

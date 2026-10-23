@@ -1,14 +1,15 @@
 from abc import ABC, abstractmethod
 
 import polars as pl
-from homeauto.core.table import Table
+from homelab.core.table import Table
 
 
 class Load(ABC):
-    @property
-    @abstractmethod
-    def table(self) -> Table:
-        pass
+    def __init__(
+        self,
+        table: Table,
+    ) -> None:
+        self.table = table
 
     @abstractmethod
     def run(self) -> None:

@@ -1,14 +1,42 @@
-# from abc import ABC
-#
-# from homeauto.core.infra import Database
-# from homeauto.core.table import Table
-# from pandera.polars import Column, DataFrameSchema
-# from polars import Boolean, Date, Float64, Int64, String
-#
-#
-# class DimensionTable(Table, ABC):
-#     pass
-#
+from homelab.core.infrastructure import DWH
+from homelab.core.table import Table
+from polars import String, Float64, Int64
+
+
+class DimensionTable(Table):
+    pass
+
+
+dim_cards = DimensionTable(
+    name="dim_cards",
+    schema={
+        "card_id": String,
+        "oracle_id": String,
+        "card": String,
+        "mana_cost": String,
+        "cmc": Int64,
+        "type": String,
+        "oracle_text": String,
+        "power": String,
+        "toughness": String,
+        "color": String,
+        "rarity": String,
+        "price": Float64,
+    },
+    database=DWH,
+)
+
+dim_tags = DimensionTable(
+    name="dim_tags",
+    schema={
+        "tag_id": String,
+        "tag": String,
+        "description": String,
+        "weight": String,
+    },
+    database=DWH,
+)
+
 #
 # dim_app_details = DimensionTable(
 #     name="dim_app_details",

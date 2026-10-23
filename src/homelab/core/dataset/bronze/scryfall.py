@@ -1,4 +1,4 @@
-from polars import Float64, List, String, Struct
+from polars import Float64, List, String, Struct, Int64
 
 from homelab.core.dataset import Dataset
 
@@ -10,7 +10,7 @@ cards = Dataset(
         "oracle_id": String,
         "name": String,
         "mana_cost": String,
-        "cmc": Float64,
+        "cmc": Int64,
         "type_line": String,
         "oracle_text": String,
         "power": String,
