@@ -35,9 +35,26 @@ def calculate_karsten_lands(
     """Computes Frank Karsten's linear regression model for baseline land requirements."""
     return 19.59 + (1.90 * amv) - (0.28 * n_ramp_draw) + (0.27 * companion_c) - (0.74 * n_untapped_mdfc) - (0.38 * n_tapped_mdfc)
 
-def check_interaction_floor(deck_full_df: pl.DataFrame) -> tuple[int, str]:
-    """Audits the maindeck for instant-speed interaction slots against the 7-slot floor."""
-    interaction_df = deck_full_df.filter(pl.col("type").str.contains("(?i)instant"))
+
+def check_interaction_floor(deck_df: pl.DataFrame, floor: int = 7):
+    # Sum total copy quantities of cards tagged as interaction/removal
+    interaction_tags = ["removal-creature", "spot-removal", "sweeper", "counterspell"]
+
+    interaction_df = (
+        deck_df
+        .explode("tags")
+        .filter(pl.col("tags").is_in(interaction_tags))
+        .group_by("card_name")
+        .agg(pl.first("quantity"))
+    )
+
     count = int(interaction_df.select(pl.col("quantity").sum()).item()) if not interaction_df.is_empty() else 0
-    status = "✅ Met (>= 7)" if count >= 7 else "⚠️ Below 7-Slot Floor"
+
+    diff = count - floor
+    if diff < 0:
+        # Leading minus sign forces Streamlit to render a DOWN arrow (↓)
+        status = f"{diff} below {floor}-Slot Floor"
+    else:
+        status = f"+{diff} over Floor"
+
     return count, status
