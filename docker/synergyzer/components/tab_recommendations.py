@@ -93,6 +93,41 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
     if filtered_df.is_empty():
         st.info("No synergy recommendations found matching your current filter criteria.")
     else:
+        # Inject CSS for top-anchored hover tooltips
+        st.markdown(
+            """
+            <style>
+            .mtg-card-wrap {
+                position: relative;
+                display: inline-block;
+                width: 100%;
+            }
+            .mtg-tooltip {
+                display: none;
+                position: absolute;
+                top: 8px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 999;
+                width: 90%;
+                background-color: rgba(22, 24, 29, 0.95);
+                color: #ffffff;
+                text-align: left;
+                border-radius: 6px;
+                padding: 8px 10px;
+                box-shadow: 0 4px 14px rgba(0,0,0,0.8);
+                border: 1px solid #313640;
+                font-size: 0.75rem;
+                pointer-events: none;
+            }
+            .mtg-card-wrap:hover .mtg-tooltip {
+                display: block;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
         recs_pd = filtered_df.to_pandas()
         max_score = max(recs_pd["synergy_score"].max(), 1)
 
@@ -106,9 +141,9 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
             matching_tags = row.get("matching_tags")
             tags_list = list(matching_tags) if matching_tags is not None and hasattr(matching_tags, "__iter__") else []
             tags_html = "".join([
-                                    f'<span style="background: rgba(0,200,83,0.15); color: #69f0ae; padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 2px;">{t}</span>'
-                                    for t in
-                                    tags_list]) if tags_list else '<span style="color: #888;">No matching tags</span>'
+                f'<span style="background: rgba(0,200,83,0.15); color: #69f0ae; padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 2px;">{t}</span>'
+                for t in tags_list
+            ]) if tags_list else '<span style="color: #888;">No matching tags</span>'
 
             pct = min(100, int((score / max_score) * 100))
 

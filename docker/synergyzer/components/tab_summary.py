@@ -26,7 +26,7 @@ def get_deck_bar_color(deck_full_df: pl.DataFrame) -> str:
             "U": "#0e68ab",  # Blue
             "B": "#7c7774",  # Black
             "R": "#ff4b4b",  # Red
-            "G": "#00c853"  # Green
+            "G": "#00c853"   # Green
         }.get(c, "#ff4b4b")
     elif "G" in all_chars:
         return "#00c853"
@@ -39,6 +39,21 @@ def get_deck_bar_color(deck_full_df: pl.DataFrame) -> str:
     elif "B" in all_chars:
         return "#7c7774"
     return "#ff4b4b"  # Default fallback
+
+
+def get_copy_tier_info(quantity: int) -> tuple[str, str, str, str, int]:
+    """
+    Maps card copy quantity to the 4-3-2-1 deckbuilding rulebook hierarchy.
+    Returns: (tier_label, badge_color, bg_rgba, bar_gradient, fill_pct)
+    """
+    if quantity >= 4:
+        return "Core Synergy", "#00c853", "rgba(0, 200, 83, 0.15)", "linear-gradient(90deg, #00c853, #69f0ae)", 100
+    elif quantity == 3:
+        return "Important", "#ffd600", "rgba(255, 214, 0, 0.15)", "linear-gradient(90deg, #ffd600, #ffff8d)", 75
+    elif quantity == 2:
+        return "Situational", "#ff9100", "rgba(255, 145, 0, 0.15)", "linear-gradient(90deg, #ff9100, #ffab40)", 50
+    else:
+        return "Silver Bullet", "#00b0ff", "rgba(0, 176, 255, 0.15)", "linear-gradient(90deg, #00b0ff, #80d8ff)", 25
 
 
 def render_summary_tab(deck_full_df: pl.DataFrame):
@@ -139,7 +154,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
     st.markdown("---")
     st.subheader("Parsed Decklist Card Grid")
 
-    # 4. Injected CSS for Cursor-Following Hover Tooltips
+    # 4. Injected CSS for Hover Tooltips
     st.markdown(
         """
         <style>
@@ -150,15 +165,18 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
         }
         .mtg-tooltip {
             display: none;
-            position: fixed;
-            z-index: 9999;
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            width: 90%;
             background-color: rgba(22, 24, 29, 0.95);
             color: #ffffff;
             text-align: left;
             border-radius: 6px;
-            padding: 8px 12px;
-            max-width: 260px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.7);
+            padding: 8px 10px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.8);
             border: 1px solid #313640;
             font-size: 0.75rem;
             pointer-events: none;
@@ -176,7 +194,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
     deck_cols = st.columns(4)
     for idx, row in deck_pd.iterrows():
         card_name = row["card_name"]
-        quantity = row["quantity"]
+        quantity = int(row["quantity"])
         image_url = get_card_image_url(card_name, row.get("image_url"))
         scryfall_url = row.get("scryfall_url")
 
@@ -187,6 +205,8 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
             for t in tags_list
         ]) if tags_list else '<span style="color: #888;">No tags recorded</span>'
 
+        tier_label, badge_color, bg_rgba, bar_gradient, fill_pct = get_copy_tier_info(quantity)
+
         with deck_cols[idx % 4]:
             has_valid_link = scryfall_url and isinstance(scryfall_url, str) and scryfall_url.strip()
             link_prefix = f'<a href="{scryfall_url}" target="_blank">' if has_valid_link else ''
@@ -196,24 +216,31 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
 
             st.markdown(
                 f'''
-                <div class="mtg-card-wrap" id="{card_id}" onmousemove="
-                    let tip = this.querySelector('.mtg-tooltip');
-                    if (tip) {{
-                        tip.style.left = (event.clientX + 12) + 'px';
-                        tip.style.top = (event.clientY + 12) + 'px';
-                    }}
-                ">
+                <div class="mtg-card-wrap" id="{card_id}">
                     <div class="mtg-tooltip">
                         <div style="font-weight: 700; margin-bottom: 4px; color: #a0a6b2; text-transform: uppercase; font-size: 0.7rem;">Card Tags</div>
                         <div>{tags_html}</div>
                     </div>
                     {link_prefix}
-                        <img src="{image_url}" style="width: 100%; border-radius: 8px; margin-bottom: 4px;">
+                        <img src="{image_url}" style="width: 100%; border-radius: 8px; margin-bottom: 6px;">
                     {link_suffix}
                 </div>
                 ''',
                 unsafe_allow_html=True
             )
 
-            caption_text = f"**{quantity}x** [{card_name}]({scryfall_url})" if has_valid_link else f"**{quantity}x** {card_name}"
-            st.caption(caption_text)
+            # 4-3-2-1 Rulebook Tier Frame Box
+            st.markdown(
+                f'''
+                <div style="background-color: #1e222a; border: 1px solid #313640; border-radius: 6px; padding: 6px 10px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: #a0a6b2;">{quantity}x Copies</span>
+                        <span style="font-size: 0.75rem; font-weight: 700; color: {badge_color}; background: {bg_rgba}; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">{tier_label}</span>
+                    </div>
+                    <div style="width: 100%; background-color: #2b303c; height: 6px; border-radius: 3px; overflow: hidden;">
+                        <div style="width: {fill_pct}%; background: {bar_gradient}; height: 100%; border-radius: 3px;"></div>
+                    </div>
+                </div>
+                ''',
+                unsafe_allow_html=True
+            )
