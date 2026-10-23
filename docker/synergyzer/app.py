@@ -7,20 +7,59 @@ from components.tab_recommendations import render_recommendations_tab
 
 st.set_page_config(
     page_title="Magic: The Gathering - Synergyzer",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# Global SaaS-grade Styling & App-mode Framing
+# Global SaaS-grade Styling, App-mode Framing, & Fantasy Typography
 st.markdown(
     """
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    header {visibility: hidden;}
+
+    /* Hide the top-right Deploy button */
+    [data-testid="stAppDeployButton"],
+    .stAppDeployButton {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Make top header background transparent so sidebar toggle button remains visible & clickable */
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+        z-index: 99999 !important;
+    }
+
+    /* Force the sidebar collapse/expand toggle button to stay visible in top-left */
+    button[data-testid="stSidebarCollapseButton"],
+    button[aria-label="Toggle sidebar"],
+    [data-testid="collapsedControl"] {
+        visibility: visible !important;
+        display: flex !important;
+        opacity: 1 !important;
+        color: #ffffff !important;
+        z-index: 100000 !important;
+    }
+
     .block-container {
         padding-top: 2rem;
         padding-bottom: 2rem;
     }
+
+    /* Apply fantasy serif font to body text */
+    html, body, [class*="css"] {
+        font-family: 'Lora', serif;
+    }
+
+    /* Apply majestic fantasy font to headers and titles */
+    h1, h2, h3, h4, h5, h6, .stSubheader {
+        font-family: 'Cinzel', serif !important;
+        letter-spacing: 0.5px;
+    }
+
     /* Custom container styling for metrics */
     div[data-testid="stMetric"] {
         background-color: #1e222a;
@@ -34,7 +73,9 @@ st.markdown(
         font-size: 0.8rem !important;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        font-family: 'Lora', serif;
     }
+
     /* Card hover zoom and shadow */
     .mtg-card-wrap img {
         transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
