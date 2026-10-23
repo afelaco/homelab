@@ -1,7 +1,9 @@
 from base64 import b64encode
 
+from homelab.core.api.authentication import Authentication
 
-class BasicAuthentication:
+
+class BasicAuthentication(Authentication):
     def __init__(self, username: str, password: str):
         self.username = username
         self.__password = password

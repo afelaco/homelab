@@ -1,7 +1,9 @@
 import requests
 
+from homelab.core.api.authentication import Authentication
 
-class OAuth2Authentication:
+
+class OAuth2Authentication(Authentication):
     def __init__(
         self,
         client_id: str,

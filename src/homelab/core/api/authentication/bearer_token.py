@@ -1,4 +1,7 @@
-class BearerTokenAuthentication:
+from homelab.core.api.authentication import Authentication
+
+
+class BearerTokenAuthentication(Authentication):
     def __init__(self, token: str):
         self.token = token
 

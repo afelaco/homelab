@@ -1,7 +1,9 @@
 from typing import Any
 
+from homelab.core.api.authentication import Authentication
 
-class ApiKeyAuthentication:
+
+class ApiKeyAuthentication(Authentication):
     def __init__(self, api_key: str, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.api_key = api_key
