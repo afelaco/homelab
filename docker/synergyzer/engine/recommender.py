@@ -13,7 +13,7 @@ def get_tag_synergy() -> pl.DataFrame:
     return pl.DataFrame(schema={"tag_a": pl.Utf8, "tag_b": pl.Utf8})
 
 def run_recommendation_pipeline(deck_df: pl.DataFrame, engine: Engine):
-    """Fetches card attributes, infers color identity, and runs synergy joins."""
+    """Fetches card attributes, infers color identity, and runs quantity- and weight-factored synergy joins."""
     card_names = deck_df["card_name"].to_list()
 
     with engine.connect() as conn:
@@ -35,9 +35,13 @@ def run_recommendation_pipeline(deck_df: pl.DataFrame, engine: Engine):
         )
         deck_full_df = deck_df.join(deck_info_df, on="card_name", how="left")
 
-        # 2. Fetch tags for color identity
+        # 2. Fetch tags for color identity & string weights (with fact override fallback)
         deck_tags_query = text("""
-            SELECT c.card AS card_name, c.color, t.tag AS tag
+            SELECT 
+                c.card AS card_name, 
+                c.color, 
+                t.tag AS tag,
+                COALESCE(f.weight, t.weight) AS weight
             FROM dim_cards c
             JOIN fact_cards_tags f ON c.oracle_id = f.oracle_id
             JOIN dim_tags t ON f.tag_id = t.tag_id
@@ -80,17 +84,31 @@ def run_recommendation_pipeline(deck_df: pl.DataFrame, engine: Engine):
 
     tags_synergies = get_tag_synergy()
 
+    deck_tags_processed = (
+        deck_tags_df
+        .join(deck_df, on="card_name", how="inner")
+        .with_columns(
+            pl.col("weight")
+            .map_elements(lambda x: 2.0 if str(x).strip().lower() == "very_strong" else 1.0, return_dtype=pl.Float64)
+            .alias("weight_multiplier")
+        )
+        .with_columns(
+            (pl.col("quantity") * pl.col("weight_multiplier")).alias("score_contribution")
+        )
+    )
+
     recommended = (
-        deck_tags_df.select("tag")
+        deck_tags_processed.select(["tag", "score_contribution"])
         .join(other=tags_synergies, left_on="tag", right_on="tag_a", how="inner")
         .join(other=candidate_cards_df, left_on="tag_b", right_on="tag", how="inner")
         .group_by("card_name")
         .agg([
-            pl.len().alias("synergy_score"),
+            pl.col("score_contribution").sum().round(1).alias("synergy_score"),
             pl.first("type").alias("type"),
             pl.first("cmc").alias("cmc"),
             pl.first("image_url").alias("image_url"),
-            pl.first("scryfall_url").alias("scryfall_url")
+            pl.first("scryfall_url").alias("scryfall_url"),
+            pl.col("tag_b").unique().alias("matching_tags")  # Captured for tooltips
         ])
         .sort("synergy_score", descending=True)
     )

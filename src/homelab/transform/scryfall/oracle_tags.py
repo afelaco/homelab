@@ -6,9 +6,6 @@ from homelab.transform import Transform
 
 # Tags to exclude from deck functional analysis
 EXCLUDED_TAGS = {
-    # 1. Catch-all for print/set cycles
-    # (You can also filter using string startswith: tag.startswith("cycle-"))
-    # 2. Name, Flavor, Art & Aesthetics
     "alliteration",
     "art-matters",
     "artist-matters",
@@ -51,7 +48,6 @@ EXCLUDED_TAGS = {
     "sports-name",
     "three-letter-name",
     "tongue-twister",
-    # 3. Draft, Format & Product Metadata
     "checklist-card",
     "collector-number-matters",
     "cover-card",
@@ -70,7 +66,6 @@ EXCLUDED_TAGS = {
     "unprinted-token",
     "useless-in-singleton-formats",
     "weaker-in-singleton-formats",
-    # 4. Jokes, Un-sets & External References
     "external-prop",
     "fun-ruling",
     "functional-art",
@@ -89,6 +84,11 @@ EXCLUDED_TAGS = {
     "unstable-killbot",
     "unstable-secret-base",
     "vanity-card",
+    "type-errata",
+    "virtual-french-vanilla",
+    "flavors-of-vanilla",
+    "card-names",
+    "virtual-legendary",
 }
 
 

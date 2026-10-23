@@ -10,6 +10,7 @@ from engine.metrics import (
     check_interaction_floor,
 )
 
+
 def render_summary_tab(deck_full_df: pl.DataFrame):
     st.subheader("Automated Deck Audit & Rulebook Metrics")
 
@@ -18,18 +19,17 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
     actual_lands = calculate_actual_lands(deck_full_df)
     n_ramp_draw = detect_cheap_ramp_draw(deck_full_df)
 
-    # Detect MDFC cards
     mdfc_cards_df = deck_full_df.filter(pl.col("card_name").str.contains(r"//"))
     n_untapped_mdfc = float(mdfc_cards_df.height)
 
     karsten_lands = calculate_karsten_lands(amv, n_ramp_draw, n_untapped_mdfc=n_untapped_mdfc)
     interaction_count, interaction_status = check_interaction_floor(deck_full_df)
 
-    # Metrics Row
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Total Cards", total_cards)
     m2.metric("Non-Land AMV", f"{amv:.2f}")
-    m3.metric("Karsten Land Target", f"{karsten_lands:.1f}", delta=f"{actual_lands - karsten_lands:+.1f} vs Actual ({actual_lands})")
+    m3.metric("Karsten Land Target", f"{karsten_lands:.1f}",
+              delta=f"{actual_lands - karsten_lands:+.1f} vs Actual ({actual_lands})")
     m4.metric("Interaction Floor", f"{interaction_count} slots", delta=interaction_status)
 
     st.markdown("---")
@@ -105,6 +105,44 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
     st.markdown("---")
     st.subheader("Parsed Decklist Card Grid")
 
+    # Injected CSS for Hover Tooltips
+    st.markdown(
+        """
+        <style>
+        .mtg-card-wrap {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        .mtg-tooltip {
+            visibility: hidden;
+            background-color: rgba(22, 24, 29, 0.95);
+            color: #ffffff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 999;
+            bottom: 105%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+            border: 1px solid #313640;
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            pointer-events: none;
+        }
+        .mtg-card-wrap:hover .mtg-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
     deck_pd = deck_full_df.to_pandas()
     deck_cols = st.columns(4)
     for idx, row in deck_pd.iterrows():
@@ -113,18 +151,32 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
         image_url = get_card_image_url(card_name, row.get("image_url"))
         scryfall_url = row.get("scryfall_url")
 
+        raw_tags = row.get("tags")
+        tags_list = list(raw_tags) if raw_tags is not None and hasattr(raw_tags, "__iter__") else []
+        tags_html = "".join([
+                                f'<span style="background: rgba(255,75,75,0.15); color: #ff7b7b; padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 2px;">{t}</span>'
+                                for t in
+                                tags_list]) if tags_list else '<span style="color: #888;">No tags recorded</span>'
+
         with deck_cols[idx % 4]:
             has_valid_link = scryfall_url and isinstance(scryfall_url, str) and scryfall_url.strip()
+            link_prefix = f'<a href="{scryfall_url}" target="_blank">' if has_valid_link else ''
+            link_suffix = '</a>' if has_valid_link else ''
 
-            if has_valid_link:
-                st.markdown(
-                    f'<a href="{scryfall_url}" target="_blank">'
-                    f'<img src="{image_url}" style="width: 100%; border-radius: 4px; margin-bottom: 4px;">'
-                    f'</a>',
-                    unsafe_allow_html=True
-                )
-            else:
-                st.image(image_url, width="stretch")
+            st.markdown(
+                f'''
+                <div class="mtg-card-wrap">
+                    <div class="mtg-tooltip">
+                        <div style="font-weight: 700; margin-bottom: 4px; color: #a0a6b2; text-transform: uppercase; font-size: 0.7rem;">Card Tags</div>
+                        <div>{tags_html}</div>
+                    </div>
+                    {link_prefix}
+                        <img src="{image_url}" style="width: 100%; border-radius: 8px; margin-bottom: 4px;">
+                    {link_suffix}
+                </div>
+                ''',
+                unsafe_allow_html=True
+            )
 
             caption_text = f"**{quantity}x** [{card_name}]({scryfall_url})" if has_valid_link else f"**{quantity}x** {card_name}"
             st.caption(caption_text)
