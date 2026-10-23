@@ -5,6 +5,7 @@ import polars as pl
 from polars import List, Struct
 from polars.datatypes import DataTypeClass
 
+from homelab import SETTINGS
 from homelab.core import get_logger
 
 logger = get_logger(name=__name__)
@@ -23,7 +24,7 @@ class Dataset:
         self.path = self.get_path()
 
     def get_path(self) -> Path:
-        return Path(f"/Users/admin/Repositories/homelab/data/{self.layer}/{self.name}.parquet").resolve()
+        return Path(f"{SETTINGS.root}/homelab/data/{self.layer}/{self.name}.parquet").resolve()
 
     def read_parquet(self) -> pl.DataFrame:
         df = pl.read_parquet(source=self.path).pipe(self.validate)
