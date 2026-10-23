@@ -13,6 +13,8 @@ dim_cards = DimensionTable(
         "card_id": String,
         "oracle_id": String,
         "card": String,
+        "scryfall_url": String,
+        "image_url": String,
         "mana_cost": String,
         "cmc": Int64,
         "type": String,

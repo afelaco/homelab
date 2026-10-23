@@ -9,6 +9,8 @@ cards = Dataset(
         "id": String,
         "oracle_id": String,
         "name": String,
+        "scryfall_uri": String,
+        "image_uris": Struct({"normal": String,}),
         "mana_cost": String,
         "cmc": Int64,
         "type_line": String,

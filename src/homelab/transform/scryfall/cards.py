@@ -13,6 +13,7 @@ class TransformScryfallCards(Transform):
             mapping={
                 "id": "card_id",
                 "name": "card",
+                "scryfall_uri": "scryfall_url",
                 "type_line": "type",
                 "color_identity": "color",
             },
@@ -24,6 +25,7 @@ class TransformScryfallCards(Transform):
             .rename(self.mapping)
             .with_columns(pl.col("color").list.join(separator=""))
             .with_columns(pl.col(pl.String).replace("", None))
+            .unnest("image_uris").rename({"normal": "image_url"})
             .unnest("prices")
             .rename({"eur": "price"})
         )
