@@ -3,8 +3,8 @@ from sqlalchemy import Engine, text
 
 
 def get_tag_synergy(engine: Engine) -> pl.DataFrame:
-    """Loads synergy mapping rules directly from the database dim_synergies table."""
-    query = text("SELECT tag_a, tag_b FROM dim_synergies;")
+    """Loads synergy mapping rules directly from the database fact_synergies table."""
+    query = text("SELECT tag_a, tag_b FROM fact_synergies;")
     with engine.connect() as conn:
         result = conn.execute(query)
         df = pl.DataFrame(result.fetchall(), schema=list(result.keys()))
@@ -80,7 +80,7 @@ def run_recommendation_pipeline(deck_df: pl.DataFrame, engine: Engine):
         pl.col("color").map_elements(is_color_allowed, return_dtype=pl.Boolean)
     )
 
-    tags_synergies = get_tag_synergy()
+    tags_synergies = get_tag_synergy(engine)
 
     deck_tags_processed = (
         deck_tags_df.join(deck_df, on="card_name", how="inner")

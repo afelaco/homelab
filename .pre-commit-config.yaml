@@ -1,4 +1,4 @@
-exclude: docker/home-assistant/config/custom_components
+exclude: docker
 repos:
 
   - repo: https://github.com/pre-commit/pre-commit-hooks

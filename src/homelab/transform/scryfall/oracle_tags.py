@@ -89,6 +89,8 @@ EXCLUDED_TAGS = {
     "flavors-of-vanilla",
     "card-names",
     "virtual-legendary",
+    "40k-model",
+    "5c-set-mechanic-commander",
 }
 
 

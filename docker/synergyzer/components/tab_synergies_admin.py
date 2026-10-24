@@ -13,7 +13,7 @@ def render_synergies_admin_tab(engine: Engine):
         all_tags = [row[0] for row in tags_result.fetchall()]
 
         # Fetch current synergies
-        syn_result = conn.execute(text("SELECT tag_a, tag_b FROM dim_synergies ORDER BY tag_a, tag_b ASC;"))
+        syn_result = conn.execute(text("SELECT tag_a, tag_b FROM fact_synergies ORDER BY tag_a, tag_b ASC;"))
         synergies_df = pl.DataFrame(syn_result.fetchall(), schema=list(syn_result.keys()))
 
     # --- ADD NEW PAIR FORM ---
@@ -35,7 +35,7 @@ def render_synergies_admin_tab(engine: Engine):
                     # Insert both directions for full symmetry
                     conn.execute(
                         text(
-                            "INSERT INTO dim_synergies (tag_a, tag_b) VALUES (:a, :b), (:b, :a) ON CONFLICT DO NOTHING;"
+                            "INSERT INTO fact_synergies (tag_a, tag_b) VALUES (:a, :b), (:b, :a) ON CONFLICT DO NOTHING;"
                         ),
                         {"a": tag_a, "b": tag_b},
                     )
@@ -67,7 +67,7 @@ def render_synergies_admin_tab(engine: Engine):
                     with engine.begin() as conn:
                         conn.execute(
                             text(
-                                "DELETE FROM dim_synergies WHERE (tag_a = :a AND tag_b = :b) OR (tag_a = :b AND tag_b = :a);"
+                                "DELETE FROM fact_synergies WHERE (tag_a = :a AND tag_b = :b) OR (tag_a = :b AND tag_b = :a);"
                             ),
                             {"a": t_a, "b": t_b},
                         )
