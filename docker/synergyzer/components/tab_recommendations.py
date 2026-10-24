@@ -4,6 +4,18 @@ import streamlit as st
 from core.scryfall import get_card_image_url
 
 
+def get_available_types(df: pl.DataFrame) -> list[str]:
+    """Extracts clean base card types (Creature, Artifact, Enchantment, etc.) from type lines."""
+    base_types = {"Creature", "Artifact", "Enchantment", "Instant", "Sorcery", "Planeswalker", "Land", "Battle"}
+    found_types = set()
+    for t in df.select("type").drop_nulls().to_series().to_list():
+        if t and isinstance(t, str):
+            for bt in base_types:
+                if bt.lower() in t.lower():
+                    found_types.add(bt)
+    return sorted(list(found_types))
+
+
 def get_available_subtypes(df: pl.DataFrame) -> list[str]:
     """Extracts unique card subtypes from the type line."""
     subtypes = set()
@@ -58,7 +70,7 @@ def get_synergy_tier_info(score: float, max_score: float) -> tuple[str, str, str
 
 
 def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors: set):
-    """Renders the recommendation tab with color identity headers, sidebar filters, subtype parsing, and dynamic score bars."""
+    """Renders the recommendation tab with color identity headers, robust sidebar filters, and dynamic score bars."""
     mana_html = render_mana_icons_html(deck_allowed_colors)
 
     # Clean Header Layout without Bottom Border
@@ -83,7 +95,7 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
     st.sidebar.markdown("### 🎛️ Filter Recommendations")
 
     # 1. Card Type Filter
-    available_types = sorted(recommended_df.select("type").drop_nulls().unique().to_series().to_list())
+    available_types = get_available_types(recommended_df)
     selected_types = st.sidebar.multiselect("Card Type", options=available_types)
 
     # 2. Card Subtype Filter
@@ -115,17 +127,16 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
     filtered_df = recommended_df
 
     if selected_types:
-        filtered_df = filtered_df.filter(pl.col("type").is_in(selected_types))
+        type_expr = pl.any_horizontal([pl.col("type").str.contains(t, literal=True) for t in selected_types])
+        filtered_df = filtered_df.filter(type_expr)
 
     if selected_subtypes:
-        filter_expr = pl.lit(False)
-        for sub in selected_subtypes:
-            filter_expr = filter_expr | pl.col("type").str.contains(sub, literal=True)
-        filtered_df = filtered_df.filter(filter_expr)
+        subtype_expr = pl.any_horizontal([pl.col("type").str.contains(sub, literal=True) for sub in selected_subtypes])
+        filtered_df = filtered_df.filter(subtype_expr)
 
     if selected_tags:
         filtered_df = filtered_df.filter(
-            pl.col("matching_tags").list.set_intersection(pl.Series(selected_tags)).list.len() > 0
+            pl.col("matching_tags").list.eval(pl.element().is_in(selected_tags)).list.any()
         )
 
     # Apply CMC range filter
