@@ -1,6 +1,6 @@
-import streamlit as st
 import polars as pl
-from sqlalchemy import text, Engine
+import streamlit as st
+from sqlalchemy import Engine, text
 
 
 def render_synergies_admin_tab(engine: Engine):

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 import polars as pl
+
 from homelab.core.table import Table
 
 

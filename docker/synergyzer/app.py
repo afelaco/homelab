@@ -1,11 +1,10 @@
 import streamlit as st
-
+from components.tab_recommendations import render_recommendations_tab
+from components.tab_summary import render_summary_tab
 from components.tab_synergies_admin import render_synergies_admin_tab
 from config import get_engine
 from core.parser import parse_manabox_text
 from engine.recommender import run_recommendation_pipeline
-from components.tab_summary import render_summary_tab
-from components.tab_recommendations import render_recommendations_tab
 
 st.set_page_config(page_title="Magic: The Gathering - Synergyzer", layout="wide", initial_sidebar_state="expanded")
 

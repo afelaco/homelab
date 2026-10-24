@@ -1,14 +1,15 @@
 import urllib.parse
+
 import altair as alt
-import streamlit as st
 import polars as pl
+import streamlit as st
 from core.scryfall import get_card_image_url
 from engine.metrics import (
-    calculate_amv,
     calculate_actual_lands,
-    detect_cheap_ramp_draw,
+    calculate_amv,
     calculate_karsten_lands,
     check_interaction_floor,
+    detect_cheap_ramp_draw,
 )
 
 
@@ -225,7 +226,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
             card_id = f"summary-card-{idx}"
 
             st.markdown(
-                f'''
+                f"""
                 <div class="mtg-card-wrap" id="{card_id}">
                     <div class="mtg-tooltip">
                         <div style="font-weight: 700; margin-bottom: 4px; color: #a0a6b2; text-transform: uppercase; font-size: 0.7rem;">Card Tags</div>
@@ -235,7 +236,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
                         <img src="{image_url}" style="width: 100%; border-radius: 8px; margin-bottom: 6px; display: block;">
                     {link_suffix}
                 </div>
-                ''',
+                """,
                 unsafe_allow_html=True,
             )
 

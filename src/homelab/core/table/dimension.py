@@ -1,6 +1,7 @@
+from polars import Float64, Int64, String
+
 from homelab.core.infrastructure import DWH
 from homelab.core.table import Table
-from polars import String, Float64, Int64
 
 
 class DimensionTable(Table):

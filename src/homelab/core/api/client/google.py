@@ -1,4 +1,3 @@
-from time import sleep
 from typing import Any
 
 from google.oauth2 import service_account

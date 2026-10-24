@@ -1,4 +1,4 @@
-from polars import Float64, List, String, Struct, Int64
+from polars import Float64, Int64, List, String, Struct
 
 from homelab.core.dataset import Dataset
 

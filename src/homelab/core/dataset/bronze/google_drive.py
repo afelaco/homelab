@@ -1,4 +1,4 @@
-from polars import String, Int64
+from polars import Int64, String
 
 from homelab.core.dataset import Dataset
 

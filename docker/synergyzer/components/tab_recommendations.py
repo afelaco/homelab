@@ -1,6 +1,7 @@
 import re
-import streamlit as st
+
 import polars as pl
+import streamlit as st
 from core.scryfall import get_card_image_url
 
 
@@ -168,7 +169,7 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
                 link_suffix = "</a>" if has_valid_link else ""
 
                 st.markdown(
-                    f'''
+                    f"""
                     <div class="mtg-card-wrap">
                         <div class="mtg-tooltip">
                             <div style="font-weight: 700; margin-bottom: 4px; color: #a0a6b2; text-transform: uppercase; font-size: 0.7rem;">Matching Synergy Tags</div>
@@ -178,7 +179,7 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
                             <img src="{image_url}" style="width: 100%; border-radius: 8px; margin-bottom: 6px;">
                         {link_suffix}
                     </div>
-                    ''',
+                    """,
                     unsafe_allow_html=True,
                 )
 

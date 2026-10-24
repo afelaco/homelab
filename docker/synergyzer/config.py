@@ -1,4 +1,5 @@
 import os
+
 from sqlalchemy import create_engine
 
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")

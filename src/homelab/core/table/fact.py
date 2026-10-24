@@ -1,8 +1,7 @@
-from abc import ABC
+from polars import String
 
 from homelab.core.infrastructure import DWH
 from homelab.core.table import Table
-from polars import String
 
 
 class FactTable(Table):

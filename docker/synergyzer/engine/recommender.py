@@ -1,7 +1,5 @@
-import json
-import pathlib
 import polars as pl
-from sqlalchemy import text, Engine
+from sqlalchemy import Engine, text
 
 
 def get_tag_synergy(engine: Engine) -> pl.DataFrame:
@@ -39,9 +37,9 @@ def run_recommendation_pipeline(deck_df: pl.DataFrame, engine: Engine):
 
         # 2. Fetch tags for color identity & string weights from dim_tags
         deck_tags_query = text("""
-            SELECT 
-                c.card AS card_name, 
-                c.color, 
+            SELECT
+                c.card AS card_name,
+                c.color,
                 t.tag AS tag,
                 t.weight AS weight
             FROM dim_cards c

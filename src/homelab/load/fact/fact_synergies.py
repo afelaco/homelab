@@ -8,9 +8,7 @@ from homelab.load import Load
 
 class LoadFactSynergies(Load):
     def __init__(self) -> None:
-        super().__init__(
-            table=homelab.core.table.fact.fact_synergies
-        )
+        super().__init__(table=homelab.core.table.fact.fact_synergies)
 
     def run(self) -> None:
         self.table.replace_table(df=self.get_data())
