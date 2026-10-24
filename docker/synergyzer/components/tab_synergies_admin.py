@@ -4,7 +4,7 @@ from sqlalchemy import Engine, text
 
 
 def render_synergies_admin_tab(engine: Engine):
-    st.subheader("🔮 Synergy Matrix Management")
+    st.subheader("Synergy Matrix Management")
     st.markdown("Add, view, or remove tag synergy mappings in the database.")
 
     with engine.connect() as conn:

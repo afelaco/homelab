@@ -61,11 +61,11 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
     """Renders the recommendation tab with color identity headers, sidebar filters, subtype parsing, and dynamic score bars."""
     mana_html = render_mana_icons_html(deck_allowed_colors)
 
-    # Clean Header Layout with Right-Aligned Color Identity Capsule Badge
+    # Clean Header Layout without Bottom Border
     st.markdown(
         f"""
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #313640;">
-            <h3 style="margin: 0; font-family: 'Cinzel', serif; letter-spacing: 0.5px;">🔮 Synergy Recommendations</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+            <h3 style="margin: 0; font-family: 'Cinzel', serif; letter-spacing: 0.5px;">Synergy Recommendations</h3>
             <div style="display: flex; align-items: center; background-color: #1e222a; border: 1px solid #313640; padding: 6px 14px; border-radius: 20px;">
                 <span style="font-size: 0.75rem; font-weight: 700; color: #a0a6b2; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 8px;">Identity</span>
                 <div style="display: flex; align-items: center;">{mana_html}</div>
@@ -233,7 +233,7 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
                 unsafe_allow_html=True,
             )
 
-            # Card Score Box with Integer Score & Purple Max Tier Icon
+            # Card Score Box with Integer Score & Tier Icon
             st.markdown(
                 f"""
                 <div style="background-color: #1e222a; border: 1px solid #313640; border-radius: 6px; padding: 6px 10px; margin-bottom: 12px;">

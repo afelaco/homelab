@@ -12,6 +12,79 @@ from engine.metrics import (
 )
 
 
+def get_color_name(colors: list[str]) -> str:
+    """Maps MTG color combinations to standard guild/shard/wedge/mono names."""
+    color_set = set(colors)
+    if not color_set:
+        return "Colorless"
+    if len(color_set) == 1:
+        c = list(color_set)[0]
+        return {"W": "Mono-White", "U": "Mono-Blue", "B": "Mono-Black", "R": "Mono-Red", "G": "Mono-Green"}.get(c, "Mono")
+    if len(color_set) == 2:
+        names = {
+            frozenset(["W", "U"]): "Azorius",
+            frozenset(["U", "B"]): "Dimir",
+            frozenset(["B", "R"]): "Rakdos",
+            frozenset(["R", "G"]): "Gruul",
+            frozenset(["G", "W"]): "Selesnya",
+            frozenset(["W", "B"]): "Orzhov",
+            frozenset(["U", "R"]): "Izzet",
+            frozenset(["B", "G"]): "Gorgari",
+            frozenset(["R", "W"]): "Boros",
+            frozenset(["G", "U"]): "Simic",
+        }
+        return names.get(frozenset(color_set), "2-Color")
+    if len(color_set) == 3:
+        names = {
+            frozenset(["W", "U", "B"]): "Esper",
+            frozenset(["U", "B", "R"]): "Grixis",
+            frozenset(["B", "R", "G"]): "Jund",
+            frozenset(["R", "G", "W"]): "Naya",
+            frozenset(["G", "W", "U"]): "Bant",
+            frozenset(["W", "B", "G"]): "Abzan",
+            frozenset(["U", "R", "W"]): "Jeskai",
+            frozenset(["B", "G", "U"]): "Sultai",
+            frozenset(["R", "W", "B"]): "Mardu",
+            frozenset(["G", "U", "R"]): "Temur",
+        }
+        return names.get(frozenset(color_set), "3-Color")
+    if len(color_set) == 4:
+        return "4-Color"
+    return "5-Color"
+
+
+def detect_dominant_archetype(deck_full_df: pl.DataFrame) -> str:
+    """Dynamically detects the main creature subtype or non-creature theme in the deck."""
+    subtypes_list = []
+    for t in deck_full_df.select("type").drop_nulls().to_series().to_list():
+        if t and isinstance(t, str) and "—" in t:
+            parts = t.split("—")
+            if len(parts) > 1:
+                for sub in parts[1].strip().split():
+                    clean_sub = sub.strip(" ,.")
+                    if clean_sub and clean_sub.lower() not in {"card", "basic"}:
+                        subtypes_list.append(clean_sub)
+
+    if subtypes_list:
+        counts = pl.Series("subtypes", subtypes_list).value_counts().sort("count", descending=True)
+        top_sub = counts[0, "subtypes"]
+        top_count = counts[0, "count"]
+        if top_count >= 3:
+            return f"{top_sub}s" if not top_sub.endswith("s") else top_sub
+
+    creatures_cnt = deck_full_df.filter(pl.col("type").str.contains("(?i)creature")).select(pl.col("quantity").sum()).item() or 0
+    enchantments_cnt = deck_full_df.filter(pl.col("type").str.contains("(?i)enchantment")).select(pl.col("quantity").sum()).item() or 0
+    artifacts_cnt = deck_full_df.filter(pl.col("type").str.contains("(?i)artifact")).select(pl.col("quantity").sum()).item() or 0
+
+    if enchantments_cnt > 12:
+        return "Enchantress"
+    if artifacts_cnt > 12:
+        return "Artifacts"
+    if creatures_cnt > 20:
+        return "Aggro / Midrange"
+    return "Control / Spellslinger"
+
+
 def get_deck_bar_color(deck_full_df: pl.DataFrame) -> str:
     """Detects the primary deck color from card color identities and maps to a theme hex code."""
     all_chars = set()
@@ -27,7 +100,7 @@ def get_deck_bar_color(deck_full_df: pl.DataFrame) -> str:
             "U": "#0e68ab",  # Blue
             "B": "#7c7774",  # Black
             "R": "#ff4b4b",  # Red
-            "G": "#00c853"  # Green
+            "G": "#00c853"   # Green
         }.get(c, "#ff4b4b")
     elif "G" in all_chars:
         return "#00c853"
@@ -39,7 +112,7 @@ def get_deck_bar_color(deck_full_df: pl.DataFrame) -> str:
         return "#d1a33b"
     elif "B" in all_chars:
         return "#7c7774"
-    return "#ff4b4b"  # Default fallback
+    return "#ff4b4b"
 
 
 def get_deck_color_identity(deck_full_df: pl.DataFrame) -> list[str]:
@@ -52,7 +125,8 @@ def get_deck_color_identity(deck_full_df: pl.DataFrame) -> list[str]:
                     colors.add(ch.upper())
 
     order = {"W": 0, "U": 1, "B": 2, "R": 3, "G": 4}
-    return sorted(list(colors), key=lambda x: order.get(x, 99))
+    sorted_cols = sorted(list(colors), key=lambda x: order.get(x, 99))
+    return sorted_cols
 
 
 def render_mana_icons_html(colors: list[str]) -> str:
@@ -70,11 +144,6 @@ def render_mana_icons_html(colors: list[str]) -> str:
 
 
 def get_copy_tier_info(quantity: int, cmc: float | int | None) -> tuple[str, str, str, str, int]:
-    """
-    Maps card copy quantity and CMC to rulebook tiers.
-    Overrides low-count cards with CMC >= 5 to 'Finisher'.
-    Returns: (tier_label, badge_color, bg_rgba, bar_gradient, fill_pct)
-    """
     is_high_cmc = cmc is not None and cmc >= 5
 
     if quantity >= 4:
@@ -92,7 +161,6 @@ def get_copy_tier_info(quantity: int, cmc: float | int | None) -> tuple[str, str
 
 
 def classify_card_type(type_str: str) -> str:
-    """Normalizes card type string into clean high-level categories."""
     if not type_str or not isinstance(type_str, str):
         return "Other"
     t = type_str.lower()
@@ -102,7 +170,7 @@ def classify_card_type(type_str: str) -> str:
         return "Lands"
     elif "instant" in t:
         return "Instants"
-    elif "sorcery" in t:
+    elif "sorceries" in t or "sorcery" in t:
         return "Sorceries"
     elif "artifact" in t:
         return "Artifacts"
@@ -116,7 +184,6 @@ def classify_card_type(type_str: str) -> str:
 
 
 def render_card_subgrid(cards_pd):
-    """Renders a subset of cards in a responsive 4-column Streamlit grid."""
     if cards_pd.empty:
         st.info("No cards found in this group.")
         return
@@ -170,7 +237,6 @@ def render_card_subgrid(cards_pd):
                 unsafe_allow_html=True
             )
 
-            # 4-3-2-1 Rulebook Tier Badge Frame
             st.markdown(
                 f'''
                 <div style="background-color: #1e222a; border: 1px solid #313640; border-radius: 6px; padding: 6px 10px; margin-bottom: 12px;">
@@ -190,11 +256,23 @@ def render_card_subgrid(cards_pd):
 def render_summary_tab(deck_full_df: pl.DataFrame):
     colors = get_deck_color_identity(deck_full_df)
     mana_html = render_mana_icons_html(colors)
+    color_name = get_color_name(colors)
+    dominant_archetype = detect_dominant_archetype(deck_full_df)
+    deck_title_name = f"{color_name} {dominant_archetype} Deck"
 
-    # Clean Header Layout with Right-Aligned Color Identity Capsule Badge
+    top_tag = "Synergy"
+    exploded_tags = deck_full_df.explode("tags").filter(pl.col("tags").is_not_null())
+    if not exploded_tags.is_empty():
+        top_tag = (
+            exploded_tags.group_by("tags")
+            .agg(pl.col("quantity").sum().alias("cnt"))
+            .sort("cnt", descending=True)[0, "tags"]
+        )
+
+    # Clean Main Header without Bottom Border
     st.markdown(
         f'''
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #313640;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
             <h3 style="margin: 0; font-family: 'Cinzel', serif; letter-spacing: 0.5px;">Automated Deck Audit & Rulebook Metrics</h3>
             <div style="display: flex; align-items: center; background-color: #1e222a; border: 1px solid #313640; padding: 6px 14px; border-radius: 20px;">
                 <span style="font-size: 0.75rem; font-weight: 700; color: #a0a6b2; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 8px;">Identity</span>
@@ -205,7 +283,28 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
         unsafe_allow_html=True
     )
 
-    # 1. Core Rulebook Metrics Calculations
+    # Dynamic Deck Archetype Summary Banner
+    st.markdown(
+        f'''
+        <div style="background: linear-gradient(135deg, #1b1f28 0%, #16181d 100%); border: 1px solid #313640; border-left: 4px solid #00c853; border-radius: 8px; padding: 14px 18px; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <div style="font-size: 0.72rem; font-weight: 700; color: #a0a6b2; text-transform: uppercase; letter-spacing: 1px;">Detected Archetype</div>
+                <div style="font-size: 1.35rem; font-weight: 700; color: #ffffff; font-family: 'Cinzel', serif; margin-top: 2px;">🛡️ {deck_title_name}</div>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <span style="background: rgba(0, 200, 83, 0.12); border: 1px solid rgba(0, 200, 83, 0.3); color: #00c853; padding: 4px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 600;">
+                    Primary Engine: {top_tag}
+                </span>
+                <span style="background: rgba(255, 214, 0, 0.12); border: 1px solid rgba(255, 214, 0, 0.3); color: #ffd600; padding: 4px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 600;">
+                    Pioneer Legal
+                </span>
+            </div>
+        </div>
+        ''',
+        unsafe_allow_html=True
+    )
+
+    # Core Rulebook Metrics Calculations
     total_cards = int(deck_full_df.select(pl.col("quantity").sum()).item())
     amv = calculate_amv(deck_full_df)
     actual_lands = calculate_actual_lands(deck_full_df)
@@ -217,7 +316,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
     karsten_lands = calculate_karsten_lands(amv, n_ramp_draw, n_untapped_mdfc=n_untapped_mdfc)
     interaction_count, interaction_status = check_interaction_floor(deck_full_df)
 
-    # 2. Metric Cards Display with Conditional Warning Borders
+    # Metric Cards Display
     m1, m2, m3, m4 = st.columns(4)
 
     with m1:
@@ -272,7 +371,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
     st.markdown("---")
     deck_bar_color = get_deck_bar_color(deck_full_df)
 
-    # 3. Side-by-Side Charts (Mana Curve & Top 10 Deck Tags with transparent background & fixed label limits)
+    # Side-by-Side Charts
     col_left, col_right = st.columns(2)
 
     with col_left:
@@ -335,7 +434,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
 
     st.markdown("---")
 
-    # 4. Section Header & Interactive Grouping Selectbox
+    # Grid Header & Grouping Selectbox
     col_hdr, col_sel = st.columns([3, 2])
     with col_hdr:
         st.subheader("Parsed Decklist Card Grid")
@@ -347,7 +446,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
             filter_mode=None
         )
 
-    # 5. Injected CSS for Top-Anchored Hover Tooltips
+    # Injected Hover Tooltip CSS
     st.markdown(
         """
         <style>
@@ -384,14 +483,12 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
 
     deck_pd = deck_full_df.to_pandas()
 
-    # 6. Render Based on Selected Grouping Mode
     if group_mode == "Flat Grid":
         render_card_subgrid(deck_pd)
 
     elif group_mode == "Card Type":
         deck_pd["grouped_type"] = deck_pd["type"].apply(classify_card_type)
-        type_order = ["Creatures", "Instants", "Sorceries", "Artifacts", "Enchantments", "Planeswalkers", "Lands",
-                      "Battles", "Other"]
+        type_order = ["Creatures", "Instants", "Sorceries", "Artifacts", "Enchantments", "Planeswalkers", "Lands", "Battles", "Other"]
 
         for g_type in type_order:
             subset = deck_pd[deck_pd["grouped_type"] == g_type]

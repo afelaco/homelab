@@ -91,6 +91,8 @@ EXCLUDED_TAGS = {
     "virtual-legendary",
     "40k-model",
     "5c-set-mechanic-commander",
+    "activated-ability",
+    "triggered-ability",
 }
 
 
