@@ -1,6 +1,7 @@
 services:
-  app:
+  synergyzer:
     build: .
+    image: synergyzer:latest
     container_name: synergyzer
     restart: unless-stopped
     env_file:
