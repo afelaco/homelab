@@ -8,6 +8,7 @@ from polars import String
 class FactTable(Table):
     pass
 
+
 fact_cards_tags = FactTable(
     name="fact_cards_tags",
     schema={
@@ -17,7 +18,17 @@ fact_cards_tags = FactTable(
     database=DWH,
 )
 
-# 
+fact_synergies = FactTable(
+    name="fact_synergies",
+    schema={
+        "tag_a": String,
+        "tag_b": String,
+    },
+    database=DWH,
+)
+
+
+#
 # fact_app_details = FactTable(
 #     name="fact_app_details",
 #     schema=DataFrameSchema(

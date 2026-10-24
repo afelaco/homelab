@@ -1,15 +1,13 @@
 import streamlit as st
+
+from components.tab_synergies_admin import render_synergies_admin_tab
 from config import get_engine
 from core.parser import parse_manabox_text
 from engine.recommender import run_recommendation_pipeline
 from components.tab_summary import render_summary_tab
 from components.tab_recommendations import render_recommendations_tab
 
-st.set_page_config(
-    page_title="Magic: The Gathering - Synergyzer",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+st.set_page_config(page_title="Magic: The Gathering - Synergyzer", layout="wide", initial_sidebar_state="expanded")
 
 # Global SaaS-grade Styling, App-mode Framing, & Fantasy Typography
 st.markdown(
@@ -87,7 +85,7 @@ st.markdown(
     }
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 st.title("💎 Magic: The Gathering - Synergyzer")
@@ -97,7 +95,7 @@ engine = get_engine()
 deck_text = st.sidebar.text_area(
     "ManaBox Decklist",
     value="[CREATURES]\n4 Speaker of the Heavens\n4 Bishop of Wings\n4 Giada, Font of Hope",
-    height=300
+    height=300,
 )
 
 # 1. Initialize session state deck if it doesn't exist yet
@@ -123,13 +121,18 @@ if "deck_df" in st.session_state and not st.session_state.deck_df.is_empty():
             st.session_state.deck_df, engine
         )
 
-        tab_summary, tab_recs = st.tabs(["📊 Deck Summary", "🔮 Synergy Recommendations"])
+        tab_summary, tab_recs, tab_admin = st.tabs(
+            ["📊 Deck Summary", "🔮 Synergy Recommendations", "⚙️ Manage Synergies"]
+        )
 
         with tab_summary:
             render_summary_tab(deck_full_df)
 
         with tab_recs:
             render_recommendations_tab(recommended_df, deck_allowed_colors)
+
+        with tab_admin:
+            render_synergies_admin_tab(engine)
 
     except Exception as e:
         st.error(f"Database query or recommendation pipeline failed: {e}")

@@ -2,8 +2,10 @@ from pydantic import BaseModel
 
 from homelab.core.model.response.scryfall import ScryfallResponseModel
 
+
 class ImageUris(BaseModel):
     normal: str
+
 
 class Prices(BaseModel):
     eur: str | None = None

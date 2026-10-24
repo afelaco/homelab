@@ -43,23 +43,16 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
 
     # 1. Card Type Filter
     selected_types = st.sidebar.multiselect(
-        "Card Type",
-        options=["Creature", "Instant", "Sorcery", "Enchantment", "Artifact", "Planeswalker", "Land"]
+        "Card Type", options=["Creature", "Instant", "Sorcery", "Enchantment", "Artifact", "Planeswalker", "Land"]
     )
 
     # 2. Card Subtype Filter
     available_subtypes = extract_subtypes(recommended_df.select("type").to_series())
-    selected_subtypes = st.sidebar.multiselect(
-        "Card Subtype (e.g., Angel, Cleric, Aura)",
-        options=available_subtypes
-    )
+    selected_subtypes = st.sidebar.multiselect("Card Subtype (e.g., Angel, Cleric, Aura)", options=available_subtypes)
 
     # 3. Synergy Tag Filter
     available_tags = extract_available_tags(recommended_df)
-    selected_tags = st.sidebar.multiselect(
-        "Synergy Tag (e.g., life-gain, ramp)",
-        options=available_tags
-    )
+    selected_tags = st.sidebar.multiselect("Synergy Tag (e.g., life-gain, ramp)", options=available_tags)
 
     # 4. Mana Value (CMC) Filter
     unique_cmcs = sorted([int(x) for x in recommended_df.select("cmc").drop_nulls().unique().to_series().to_list()])
@@ -125,7 +118,7 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
             }
             </style>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
         recs_pd = filtered_df.to_pandas()
@@ -140,10 +133,16 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
 
             matching_tags = row.get("matching_tags")
             tags_list = list(matching_tags) if matching_tags is not None and hasattr(matching_tags, "__iter__") else []
-            tags_html = "".join([
-                f'<span style="background: rgba(0,200,83,0.15); color: #69f0ae; padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 2px;">{t}</span>'
-                for t in tags_list
-            ]) if tags_list else '<span style="color: #888;">No matching tags</span>'
+            tags_html = (
+                "".join(
+                    [
+                        f'<span style="background: rgba(0,200,83,0.15); color: #69f0ae; padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 2px;">{t}</span>'
+                        for t in tags_list
+                    ]
+                )
+                if tags_list
+                else '<span style="color: #888;">No matching tags</span>'
+            )
 
             pct = min(100, int((score / max_score) * 100))
 
@@ -165,8 +164,8 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
 
             with cols[idx % 4]:
                 has_valid_link = scryfall_url and isinstance(scryfall_url, str) and scryfall_url.strip()
-                link_prefix = f'<a href="{scryfall_url}" target="_blank">' if has_valid_link else ''
-                link_suffix = '</a>' if has_valid_link else ''
+                link_prefix = f'<a href="{scryfall_url}" target="_blank">' if has_valid_link else ""
+                link_suffix = "</a>" if has_valid_link else ""
 
                 st.markdown(
                     f'''
@@ -180,11 +179,11 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
                         {link_suffix}
                     </div>
                     ''',
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
 
                 st.markdown(
-                    f'''
+                    f"""
                     <div style="background-color: #1e222a; border: 1px solid #313640; border-radius: 6px; padding: 6px 10px; margin-bottom: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                             <span style="font-size: 0.8rem; font-weight: 600; color: #a0a6b2; text-transform: uppercase; letter-spacing: 0.5px;">Synergy</span>
@@ -194,6 +193,6 @@ def render_recommendations_tab(recommended_df: pl.DataFrame, deck_allowed_colors
                             <div style="width: {pct}%; background: {bar_gradient}; height: 100%; border-radius: 3px;"></div>
                         </div>
                     </div>
-                    ''',
-                    unsafe_allow_html=True
+                    """,
+                    unsafe_allow_html=True,
                 )

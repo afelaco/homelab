@@ -1,6 +1,7 @@
 import re
 import polars as pl
 
+
 def parse_manabox_text(text: str) -> pl.DataFrame:
     """Parses raw text box input using a strict regex pattern and skips category headers."""
     pattern = re.compile(r"^(\d+)\s+(.+)$")

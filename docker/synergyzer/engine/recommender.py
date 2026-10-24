@@ -3,14 +3,18 @@ import pathlib
 import polars as pl
 from sqlalchemy import text, Engine
 
-def get_tag_synergy() -> pl.DataFrame:
-    """Loads synergy mapping rules from synergies.json."""
-    json_path = pathlib.Path("synergies.json")
-    if json_path.exists():
-        with open(json_path, "r") as f:
-            raw_data = json.load(f)
-        return pl.DataFrame(raw_data)
-    return pl.DataFrame(schema={"tag_a": pl.Utf8, "tag_b": pl.Utf8})
+
+def get_tag_synergy(engine: Engine) -> pl.DataFrame:
+    """Loads synergy mapping rules directly from the database dim_synergies table."""
+    query = text("SELECT tag_a, tag_b FROM dim_synergies;")
+    with engine.connect() as conn:
+        result = conn.execute(query)
+        df = pl.DataFrame(result.fetchall(), schema=list(result.keys()))
+
+    if df.is_empty():
+        return pl.DataFrame(schema={"tag_a": pl.Utf8, "tag_b": pl.Utf8})
+    return df
+
 
 def run_recommendation_pipeline(deck_df: pl.DataFrame, engine: Engine):
     """Fetches card attributes, infers color identity, and runs quantity- and weight-factored synergy joins."""
@@ -28,10 +32,8 @@ def run_recommendation_pipeline(deck_df: pl.DataFrame, engine: Engine):
         result_deck = conn.execute(deck_cards_query, {"card_names": card_names})
         raw_deck_data = pl.DataFrame(result_deck.fetchall(), schema=list(result_deck.keys()))
 
-        deck_info_df = (
-            raw_deck_data
-            .group_by(["card_name", "image_url", "scryfall_url", "color", "type", "cmc"])
-            .agg(pl.col("tag").drop_nulls().alias("tags"))
+        deck_info_df = raw_deck_data.group_by(["card_name", "image_url", "scryfall_url", "color", "type", "cmc"]).agg(
+            pl.col("tag").drop_nulls().alias("tags")
         )
         deck_full_df = deck_df.join(deck_info_df, on="card_name", how="left")
 
@@ -76,25 +78,20 @@ def run_recommendation_pipeline(deck_df: pl.DataFrame, engine: Engine):
             return True
         return all(ch in deck_allowed_colors for ch in str(val).strip())
 
-    candidate_cards_df = (
-        all_cards_tags_df
-        .filter(~pl.col("card_name").is_in(card_names))
-        .filter(pl.col("color").map_elements(is_color_allowed, return_dtype=pl.Boolean))
+    candidate_cards_df = all_cards_tags_df.filter(~pl.col("card_name").is_in(card_names)).filter(
+        pl.col("color").map_elements(is_color_allowed, return_dtype=pl.Boolean)
     )
 
     tags_synergies = get_tag_synergy()
 
     deck_tags_processed = (
-        deck_tags_df
-        .join(deck_df, on="card_name", how="inner")
+        deck_tags_df.join(deck_df, on="card_name", how="inner")
         .with_columns(
             pl.col("weight")
             .map_elements(lambda x: 2.0 if str(x).strip().lower() == "very_strong" else 1.0, return_dtype=pl.Float64)
             .alias("weight_multiplier")
         )
-        .with_columns(
-            (pl.col("quantity") * pl.col("weight_multiplier")).alias("score_contribution")
-        )
+        .with_columns((pl.col("quantity") * pl.col("weight_multiplier")).alias("score_contribution"))
     )
 
     recommended = (
@@ -102,14 +99,16 @@ def run_recommendation_pipeline(deck_df: pl.DataFrame, engine: Engine):
         .join(other=tags_synergies, left_on="tag", right_on="tag_a", how="inner")
         .join(other=candidate_cards_df, left_on="tag_b", right_on="tag", how="inner")
         .group_by("card_name")
-        .agg([
-            pl.col("score_contribution").sum().round(1).alias("synergy_score"),
-            pl.first("type").alias("type"),
-            pl.first("cmc").alias("cmc"),
-            pl.first("image_url").alias("image_url"),
-            pl.first("scryfall_url").alias("scryfall_url"),
-            pl.col("tag_b").unique().alias("matching_tags")  # Captured for tooltips
-        ])
+        .agg(
+            [
+                pl.col("score_contribution").sum().round(1).alias("synergy_score"),
+                pl.first("type").alias("type"),
+                pl.first("cmc").alias("cmc"),
+                pl.first("image_url").alias("image_url"),
+                pl.first("scryfall_url").alias("scryfall_url"),
+                pl.col("tag_b").unique().alias("matching_tags"),  # Captured for tooltips
+            ]
+        )
         .sort("synergy_score", descending=True)
     )
 

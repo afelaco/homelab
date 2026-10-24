@@ -27,7 +27,7 @@ def get_deck_bar_color(deck_full_df: pl.DataFrame) -> str:
             "U": "#0e68ab",  # Blue
             "B": "#7c7774",  # Black
             "R": "#ff4b4b",  # Red
-            "G": "#00c853"  # Green
+            "G": "#00c853",  # Green
         }.get(c, "#ff4b4b")
     elif "G" in all_chars:
         return "#00c853"
@@ -79,13 +79,10 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
     m3.metric(
         "Karsten Land Target",
         f"{karsten_lands:.1f}",
-        delta=f"{actual_lands - karsten_lands:+.1f} vs Actual ({actual_lands})"
+        delta=f"{actual_lands - karsten_lands:+.1f} vs Actual ({actual_lands})",
     )
     m4.metric(
-        label="Interaction Floor",
-        value=f"{interaction_count} slots",
-        delta=interaction_status,
-        delta_color="normal"
+        label="Interaction Floor", value=f"{interaction_count} slots", delta=interaction_status, delta_color="normal"
     )
 
     st.markdown("---")
@@ -99,8 +96,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
     with col_left:
         st.markdown("#### Non-Land Mana Curve")
         curve_df = (
-            deck_full_df
-            .filter((pl.col("cmc").is_not_null()) & (~pl.col("type").str.contains("(?i)land")))
+            deck_full_df.filter((pl.col("cmc").is_not_null()) & (~pl.col("type").str.contains("(?i)land")))
             .group_by("cmc")
             .agg(pl.col("quantity").sum())
             .sort("cmc")
@@ -115,7 +111,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
                     x=alt.X("cmc:N", title="Mana Value (CMC)", sort=None),
                     y=alt.Y("quantity:Q", title="Card Count"),
                     color=alt.value(deck_bar_color),
-                    tooltip=["cmc", "quantity"]
+                    tooltip=["cmc", "quantity"],
                 )
                 .properties(height=320)
             )
@@ -126,8 +122,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
     with col_right:
         st.markdown("#### Top 10 Deck Tags")
         deck_tags_count_df = (
-            deck_full_df
-            .explode("tags")
+            deck_full_df.explode("tags")
             .filter(pl.col("tags").is_not_null())
             .group_by("tags")
             .agg(pl.col("quantity").sum().alias("deck_count"))
@@ -144,7 +139,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
                     x=alt.X("deck_count:Q", title="Occurrence Count"),
                     y=alt.Y("tags:N", sort="-x", title="Tag Name"),
                     color=alt.value(deck_bar_color),
-                    tooltip=["tags", "deck_count"]
+                    tooltip=["tags", "deck_count"],
                 )
                 .properties(height=320)
             )
@@ -187,7 +182,7 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
         }
         </style>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # 5. Render Card Grid
@@ -209,17 +204,23 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
 
         raw_tags = row.get("tags")
         tags_list = list(raw_tags) if raw_tags is not None and hasattr(raw_tags, "__iter__") else []
-        tags_html = "".join([
-            f'<span style="background: rgba(255,75,75,0.15); color: #ff7b7b; padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 2px;">{t}</span>'
-            for t in tags_list
-        ]) if tags_list else '<span style="color: #888;">No tags recorded</span>'
+        tags_html = (
+            "".join(
+                [
+                    f'<span style="background: rgba(255,75,75,0.15); color: #ff7b7b; padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 2px;">{t}</span>'
+                    for t in tags_list
+                ]
+            )
+            if tags_list
+            else '<span style="color: #888;">No tags recorded</span>'
+        )
 
         tier_label, badge_color, bg_rgba, bar_gradient, fill_pct = get_copy_tier_info(quantity)
 
         with deck_cols[idx % 4]:
             has_valid_link = bool(scryfall_url and isinstance(scryfall_url, str) and scryfall_url.strip())
-            link_prefix = f'<a href="{scryfall_url}" target="_blank">' if has_valid_link else ''
-            link_suffix = '</a>' if has_valid_link else ''
+            link_prefix = f'<a href="{scryfall_url}" target="_blank">' if has_valid_link else ""
+            link_suffix = "</a>" if has_valid_link else ""
 
             card_id = f"summary-card-{idx}"
 
@@ -235,12 +236,12 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
                     {link_suffix}
                 </div>
                 ''',
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
             # 4-3-2-1 Rulebook Tier Badge Frame
             st.markdown(
-                f'''
+                f"""
                 <div style="background-color: #1e222a; border: 1px solid #313640; border-radius: 6px; padding: 6px 10px; margin-bottom: 12px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                         <span style="font-size: 0.8rem; font-weight: 700; color: #a0a6b2;">{quantity}x Copies</span>
@@ -250,6 +251,6 @@ def render_summary_tab(deck_full_df: pl.DataFrame):
                         <div style="width: {fill_pct}%; background: {bar_gradient}; height: 100%; border-radius: 3px;"></div>
                     </div>
                 </div>
-                ''',
-                unsafe_allow_html=True
+                """,
+                unsafe_allow_html=True,
             )
