@@ -17,7 +17,7 @@ def run_recommendation_pipeline(deck_df: pl.DataFrame, engine: Engine):
     card_names = deck_df["card_name"].to_list()
 
     with engine.connect() as conn:
-        # 1. Fetch card attributes and tags
+        # 1. Fetch card attributes and tags via normalized foreign keys
         deck_cards_query = text("""
             SELECT DISTINCT c.card AS card_name, c.image_url, c.scryfall_url, c.color, c.type, c.cmc, t.tag
             FROM dim_cards c
@@ -35,13 +35,13 @@ def run_recommendation_pipeline(deck_df: pl.DataFrame, engine: Engine):
         )
         deck_full_df = deck_df.join(deck_info_df, on="card_name", how="left")
 
-        # 2. Fetch tags for color identity & string weights (with fact override fallback)
+        # 2. Fetch tags for color identity & string weights from dim_tags
         deck_tags_query = text("""
             SELECT 
                 c.card AS card_name, 
                 c.color, 
                 t.tag AS tag,
-                COALESCE(f.weight, t.weight) AS weight
+                t.weight AS weight
             FROM dim_cards c
             JOIN fact_cards_tags f ON c.oracle_id = f.oracle_id
             JOIN dim_tags t ON f.tag_id = t.tag_id
@@ -50,7 +50,7 @@ def run_recommendation_pipeline(deck_df: pl.DataFrame, engine: Engine):
         result = conn.execute(deck_tags_query, {"card_names": card_names})
         deck_tags_df = pl.DataFrame(result.fetchall(), schema=list(result.keys()))
 
-        # 3. Fetch candidate cards
+        # 3. Fetch candidate cards using normalized table joins
         all_cards_tags_query = text("""
             SELECT c.card AS card_name, c.type, c.cmc, c.image_url, c.scryfall_url, c.color, t.tag AS tag
             FROM dim_cards c

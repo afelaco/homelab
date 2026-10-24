@@ -13,9 +13,6 @@ fact_cards_tags = FactTable(
     schema={
         "oracle_id": String,
         "tag_id": String,
-        "tag": String,
-        "description": String,
-        "weight": String,
     },
     database=DWH,
 )

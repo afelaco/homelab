@@ -17,7 +17,7 @@ class LoadFactCardsTags(Load):
     def get_data(self) -> pl.DataFrame:
         return (
             homelab.core.dataset.silver.scryfall.oracle_tags.read_parquet()
-            .sort("tag")
+            .sort("oracle_id")
             .select(self.table.schema.keys())
         )
 

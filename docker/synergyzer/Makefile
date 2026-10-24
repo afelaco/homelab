@@ -1,8 +1,8 @@
-.PHONY: build up down logs ps
+.PHONY: build up
 
 build:
 	docker compose build
 
-up:
+up: build
 	docker rm -f synergyzer
 	docker compose up --build -d
